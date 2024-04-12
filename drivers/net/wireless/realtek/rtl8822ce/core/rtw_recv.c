@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2017 Realtek Corporation.
- * Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -4501,7 +4500,7 @@ static void rtw_signal_stat_timer_hdl(void *ctx)
 			sprintf(avg + strlen(avg), " %2d", recvpriv->signal_avg[(s+i)%ROW_LEN]);
 
 			if ((i+1)%16 == 0) {
-				RTW_INFO("%s\n%s\n", row, avg);
+				printk("%s\n%s\n", row, avg);
 				memset (row, 0, sizeof(row));
 				memset (avg, 0, sizeof(row));
 				sprintf(row, "[ROW]");
@@ -4510,7 +4509,7 @@ static void rtw_signal_stat_timer_hdl(void *ctx)
 		}
 
 		if ((i)%16 != 0)
-			RTW_INFO("%s\n%s\n", row, avg);
+			printk("%s\n%s\n", row, avg);
 
 		recvpriv->signal_row_idx = 0;
 		memset (recvpriv->signal_row, 0, ROW_LEN);
@@ -4593,7 +4592,7 @@ static void rtw_signal_stat_timer_hdl(void *ctx)
 		if (MLME_IS_STA(adapter))
 			adapter->mlmepriv.cur_network_scanned->network.PhyInfo.SignalStrength = recvpriv->signal_strength;
 #ifdef RTW_RSSI_DBG
-		RTW_INFO("%d + %d --> %d\n", old_s, avg_signal_strength, recvpriv->signal_strength);
+		printk("%d + %d --> %d\n", old_s, avg_signal_strength, recvpriv->signal_strength);
 		RTW_INFO("signal_strength:%3u\n", recvpriv->signal_strength);
 #endif
 #if defined(DBG_RX_SIGNAL_DISPLAY_PROCESSING) && 1
