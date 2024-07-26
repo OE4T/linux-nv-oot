@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2016-2023, NVIDIA Corporation.  All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2016-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * NVDLA driver for T194/T23x
  */
+
+#include <nvidia/conftest.h>
 
 #include <linux/arm64-barrier.h>
 #include <linux/module.h>
@@ -1526,9 +1528,21 @@ const struct dev_pm_ops nvdla_module_pm_ops = {
 };
 #endif /* CONFIG_PM */
 
+#if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
+static inline void __exit nvdla_remove_wrapper(struct platform_device *pdev)
+{
+	nvdla_remove(pdev);
+}
+#else
+static inline int __exit nvdla_remove_wrapper(struct platform_device *pdev)
+{
+	return nvdla_remove(pdev);
+}
+#endif
+
 static struct platform_driver nvdla_driver = {
 	.probe = nvdla_probe,
-	.remove = __exit_p(nvdla_remove),
+	.remove = __exit_p(nvdla_remove_wrapper),
 	.driver = {
 		.owner = THIS_MODULE,
 		.name = "nvdla",

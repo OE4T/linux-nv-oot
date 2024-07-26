@@ -254,6 +254,18 @@ static const struct dev_pm_ops cdi_pwm_pm_ops = {
 	.runtime_resume = cdi_pwm_resume,
 };
 
+#if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
+static inline void cdi_pwm_remove_wrapper(struct platform_device *pdev)
+{
+	cdi_pwm_remove(pdev);
+}
+#else
+static inline int cdi_pwm_remove_wrapper(struct platform_device *pdev)
+{
+	return cdi_pwm_remove(pdev);
+}
+#endif
+
 static struct platform_driver cdi_pwm_driver = {
 	.driver = {
 		.name = "cdi-pwm",
@@ -262,7 +274,7 @@ static struct platform_driver cdi_pwm_driver = {
 		.pm = &cdi_pwm_pm_ops,
 	},
 	.probe = cdi_pwm_probe,
-	.remove = cdi_pwm_remove,
+	.remove = cdi_pwm_remove_wrapper,
 };
 
 module_platform_driver(cdi_pwm_driver);
