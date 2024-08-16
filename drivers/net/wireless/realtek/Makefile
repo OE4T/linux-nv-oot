@@ -7,4 +7,5 @@ ifneq ($(NV_OOT_REALTEK_RTL8822CE_SKIP_BUILD),y)
 obj-m += rtl8822ce/
 endif
 endif
+obj-m += rtl8852ce/
 endif
