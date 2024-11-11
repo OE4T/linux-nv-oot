@@ -6454,6 +6454,7 @@ compile_test() {
         __assign_str_has_no_src_arg)
             #
             echo "
+            #undef linux
             #define TRACE_INCLUDE_FILE conftest$$
             #define TRACE_INCLUDE_PATH ${PWD}
 
