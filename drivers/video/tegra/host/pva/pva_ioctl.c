@@ -12,6 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/fs.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
 #include <linux/slab.h>
 #include <linux/circ_buf.h>
 #include <linux/nospec.h>
@@ -1134,7 +1135,9 @@ static ssize_t pva_read_vpu_print_buffer(struct file *file,
 
 const struct file_operations tegra_pva_ctrl_ops = {
 	.owner = THIS_MODULE,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek = no_llseek,
+#endif
 	.unlocked_ioctl = pva_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = pva_ioctl,
