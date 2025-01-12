@@ -16,6 +16,7 @@
 #include <linux/platform_device.h>
 #include <uapi/linux/nvhost_nvcsi_ioctl.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/nvhost.h>
@@ -129,7 +130,9 @@ static int nvcsi_release(struct inode *inode, struct file *file)
 
 const struct file_operations tegra_nvcsi_ctrl_ops = {
 	.owner = THIS_MODULE,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek = no_llseek,
+#endif
 	.unlocked_ioctl = nvcsi_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = nvcsi_ioctl,

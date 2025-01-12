@@ -15,6 +15,7 @@
 #include <linux/delay.h>
 #include <linux/sched.h>
 #include <linux/pid.h>
+#include <linux/version.h>
 
 #ifdef CONFIG_PM_SLEEP
 #include <linux/suspend.h>
@@ -389,7 +390,9 @@ static int tegra_hv_pm_ctl_release(struct inode *inode, struct file *filp)
 
 static const struct file_operations tegra_hv_pm_ctl_fops = {
 	.owner		= THIS_MODULE,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek		= no_llseek,
+#endif
 	.read		= tegra_hv_pm_ctl_read,
 	.write		= tegra_hv_pm_ctl_write,
 	.poll		= tegra_hv_pm_ctl_poll,

@@ -20,6 +20,7 @@
 #include <linux/slab.h>
 #include <linux/stddef.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
 #include <media/fusa-capture/capture-isp.h>
 #include <media/fusa-capture/capture-isp-channel.h>
 
@@ -523,7 +524,9 @@ static long isp_channel_ioctl(
 
 static const struct file_operations isp_channel_fops = {
 	.owner = THIS_MODULE,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek = no_llseek,
+#endif
 	.unlocked_ioctl = isp_channel_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = isp_channel_ioctl,

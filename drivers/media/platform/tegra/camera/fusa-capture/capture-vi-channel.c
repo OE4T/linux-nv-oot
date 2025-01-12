@@ -19,6 +19,7 @@
 #include <linux/sched.h>
 #include <linux/vmalloc.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
 #include <linux/dma-buf.h>
 #include <linux/dma-mapping.h>
 #include <media/fusa-capture/capture-vi.h>
@@ -616,7 +617,9 @@ static long vi_channel_ioctl(
 
 static const struct file_operations vi_channel_fops = {
 	.owner = THIS_MODULE,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek = no_llseek,
+#endif
 	.unlocked_ioctl = vi_channel_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = vi_channel_ioctl,
