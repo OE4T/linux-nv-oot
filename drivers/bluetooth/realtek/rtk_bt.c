@@ -17,7 +17,12 @@
 #include <linux/dcache.h>
 #include <linux/reboot.h>
 #include <net/sock.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 #include <asm/unaligned.h>
+#else
+#include <linux/unaligned.h>
+#endif
 
 #include "rtk_bt.h"
 #include "rtk_misc.h"
