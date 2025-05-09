@@ -32,7 +32,6 @@
 #include <linux/uaccess.h>
 
 #include "amisc.h"
-#include "ape_actmon.h"
 #include "os.h"
 #include "dev.h"
 #include "dram_app_mem_manager.h"
