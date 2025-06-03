@@ -37,7 +37,6 @@ struct hyp_shared_memory_info {
 static struct hyp_shared_memory_info hyp_shared_memory_attrs[HYP_SHM_ID_NUM];
 
 
-
 /* Map the HV trace buffer to the calling user process */
 static int hvc_sysfs_mmap(struct file *fp, struct kobject *ko,
 #if defined(NV_BIN_ATTRIBUTE_STRUCT_MMAP_HAS_CONST_BIN_ATTRIBUTE_ARG) /* Linux v6.13 */
@@ -84,7 +83,12 @@ static int hvc_create_sysfs(
 }
 
 static ssize_t log_mask_read(struct file *fp, struct kobject *ko,
-	struct bin_attribute *attr, char *buf, loff_t pos, size_t size)
+#if defined(NV_BIN_ATTRIBUTE_STRUCT_READWRITE_HAS_CONST_BIN_ATTRIBUTE_ARG)
+	const struct bin_attribute *attr,
+#else
+	struct bin_attribute *attr,
+#endif
+	char *buf, loff_t pos, size_t size)
 {
 	if (size == sizeof(uint64_t))
 		hyp_trace_get_mask((uint64_t *)buf);
@@ -92,7 +96,12 @@ static ssize_t log_mask_read(struct file *fp, struct kobject *ko,
 }
 
 static ssize_t log_mask_write(struct file *fp, struct kobject *ko,
-	struct bin_attribute *attr, char *buf, loff_t pos, size_t size)
+#if defined(NV_BIN_ATTRIBUTE_STRUCT_READWRITE_HAS_CONST_BIN_ATTRIBUTE_ARG)
+	const struct bin_attribute *attr,
+#else
+	struct bin_attribute *attr,
+#endif
+	char *buf, loff_t pos, size_t size)
 {
 	if (size == sizeof(uint64_t))
 		hyp_trace_set_mask(*(uint64_t *)buf);
