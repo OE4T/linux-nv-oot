@@ -698,6 +698,11 @@ int tegra_camera_update_clknbw(void *priv, bool stream_on)
 	struct tegra_camera_info *info;
 	int ret = 0;
 
+	if (tegra_camera_misc.parent == NULL) {
+		pr_info("driver not enabled, cannot update clk/bw\n");
+		return -ENODEV;
+	}
+
 	info = dev_get_drvdata(tegra_camera_misc.parent);
 	if (!info)
 		return -EINVAL;
