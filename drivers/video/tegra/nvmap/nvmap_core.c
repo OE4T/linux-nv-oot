@@ -101,7 +101,7 @@ void *__nvmap_mmap(struct nvmap_handle *h)
 
 	adj_size = PAGE_ALIGN(adj_size);
 
-	if (pfn_valid(__phys_to_pfn(nvmap_get_heap_block_base(h->carveout) & PAGE_MASK))) {
+	if (pfn_is_map_memory(__phys_to_pfn(nvmap_get_heap_block_base(h->carveout) & PAGE_MASK))) {
 		unsigned long pfn;
 		struct page *page;
 		int nr_pages;
