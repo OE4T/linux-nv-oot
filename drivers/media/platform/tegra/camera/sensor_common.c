@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2017-2025 NVIDIA CORPORATION & AFFILIATES.
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 NVIDIA CORPORATION & AFFILIATES.
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -230,6 +230,18 @@ static int sensor_common_parse_signal_props(
 			signal->edge_delay = 0;
 		else
 			signal->edge_delay = value;
+
+		err = read_property_u32(node, "deskew_compare", &value);
+		if (err)
+			signal->deskew_compare = 0;
+		else
+			signal->deskew_compare = value;
+
+		err = read_property_u32(node, "deskew_settle", &value);
+		if (err)
+			signal->deskew_settle = 0;
+		else
+			signal->deskew_settle = value;
 	}
 
 	err = read_property_u32(node, "cil_clksettletime", &value);
@@ -254,6 +266,17 @@ static int sensor_common_parse_signal_props(
 				!strncmp(temp_str, "true", sizeof("true"));
 	else
 		signal->deskew_periodic_enable = 0;
+
+	/* Parse clock partition selection for DPHY 4-lane mode */
+	err = of_property_read_string(node, "clk_partition", &temp_str);
+	if (!err) {
+		if (strcmp(temp_str, "cil_b") == 0)
+			signal->clk_partition = 1;
+		else
+			signal->clk_partition = 0; /* default: cil_a */
+	} else {
+		signal->clk_partition = 0; /* default: cil_a */
+	}
 
 	err = of_property_read_string(node, "tegra_sinterface", &temp_str);
 	if (err) {

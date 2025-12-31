@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -457,7 +457,7 @@ static int max96726_I2cSequence_Raw16_8pipes(struct max96726_priv *priv)
 	max96726_write(priv, 0x04C8, 0x40);	/* Pipe 7 to ctrl 2 (port B) */
 
 	/* 0x04,0x42,0x08,0xB0,0x8F, [7]=0b1 force_csi_out */
-	max96726_write(priv, 0x08B0, 0x8F);	/* Enable port A */
+	max96726_write(priv, 0x08B0, 0xEF);	/* Enable port A + force_clk0_en + force_clk3_en */
 
 	usleep_range(100000, 200000);
 

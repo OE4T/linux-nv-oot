@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* SPDX-FileCopyrightText: Copyright (c) 2017-2025 NVIDIA CORPORATION & AFFILIATES.
+/* SPDX-FileCopyrightText: Copyright (c) 2017-2026 NVIDIA CORPORATION & AFFILIATES.
  * All rights reserved.
  *
  * TEGRA_V4L2_CAMERA.h - utilities for tegra camera driver
@@ -127,6 +127,24 @@ struct sensor_signal_properties {
 	__u32 afe_hf_gain;
 	/** @a edge_delay [-10,9] */
 	__s32 edge_delay;
+	/**
+	 * DPHY deskew compare threshold [0,15].
+	 * 0 = use default (reset value).
+	 */
+	__u32 deskew_compare;
+	/**
+	 * DPHY deskew settle time [0,15].
+	 * 0 = use default (reset value).
+	 */
+	__u32 deskew_settle;
+
+	/**
+	 * Clock partition selection for DPHY 4-lane mode:
+	 * 0 = Use CLK from Partition A (default)
+	 * 1 = Use CLK from Partition B
+	 * Only applicable for DPHY mode with 4 lanes.
+	 */
+	__u32 clk_partition;
 };
 
 struct sensor_image_properties {

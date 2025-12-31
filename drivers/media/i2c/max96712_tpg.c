@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -378,8 +378,8 @@ static int max96712_raw16_3840_2160_x4(struct max96712_priv *priv)
 	max96712_write(priv, 0x9CA, 0xC0);	/* Port D Lane count */
 	max96712_write(priv, 0x8A3, 0xE4);	/* lane mapping */
 	max96712_write(priv, 0x8A4, 0xE4);
-	/* PHY Mode 2x4, force clock on PHY0, CIL A, (required by RCE FW) */
-	max96712_write(priv, 0x8A0, 0xA4);
+	/* PHY Mode 2x4, force clock on both PHY0 and PHY3 (CIL A & B available) */
+	max96712_write(priv, 0x8A0, 0xE4);
 
 	max96712_write(priv, 0x8A1, 0x55);	/* Optimize HS timing */
 

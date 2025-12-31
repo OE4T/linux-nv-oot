@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2016-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2016-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 /* Tegra CSI5 device common APIs */
 
 #include <media/csi.h>
@@ -314,6 +314,15 @@ static int csi5_stream_set_config(struct tegra_csi_channel *chan, u32 stream_id,
 		}
 	}
 
+	/* Clock partition selection for DPHY 4-lane mode - Brick level */
+	if (mode && !is_cphy && (csi_lanes == 4)) {
+		brick_config.clk_partition = mode->signal_properties.clk_partition;
+		dev_dbg(csi->dev, "DPHY 4-lane clk_partition=%d (0=CIL_A, 1=CIL_B)\n",
+				brick_config.clk_partition);
+	} else {
+		brick_config.clk_partition = 0; /* default: CIL_A */
+	}
+
 	/* CIL config */
 	memset(&cil_config, 0, sizeof(cil_config));
 	cil_config.num_lanes = csi_lanes;
@@ -325,8 +334,11 @@ static int csi5_stream_set_config(struct tegra_csi_channel *chan, u32 stream_id,
 		cil_config.tuning.control = true;
 		cil_config.tuning.afe_hf_gain = mode->signal_properties.afe_hf_gain;
 		cil_config.tuning.edge_delay = mode->signal_properties.edge_delay;
-		dev_dbg(csi->dev, "Trying to override hfgain %d and edge-delay %d to RCE\n",
-				cil_config.tuning.afe_hf_gain, cil_config.tuning.edge_delay);
+		cil_config.tuning.deskew_compare = mode->signal_properties.deskew_compare;
+		cil_config.tuning.deskew_settle = mode->signal_properties.deskew_settle;
+		dev_dbg(csi->dev, "Shmoo override: hfgain=%d edge_delay=%d deskew_compare=%d deskew_settle=%d\n",
+				cil_config.tuning.afe_hf_gain, cil_config.tuning.edge_delay,
+				cil_config.tuning.deskew_compare, cil_config.tuning.deskew_settle);
 	}
 
 	if (s_data && !chan->pg_mode)

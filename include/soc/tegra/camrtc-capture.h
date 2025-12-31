@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/* SPDX-FileCopyrightText: Copyright (c) 2016-2025 NVIDIA CORPORATION & AFFILIATES.
+/* SPDX-FileCopyrightText: Copyright (c) 2016-2026 NVIDIA CORPORATION & AFFILIATES.
  * All rights reserved.
  *
  *
@@ -2940,8 +2940,16 @@ struct nvcsi_brick_config {
 	 */
 	uint8_t lane_polarity[NVCSI_BRICK_NUM_LANES];
 
+	/**
+	 * Clock partition selection for DPHY 4-lane mode.
+	 * 0 = Use CLK from Partition A (default)
+	 * 1 = Use CLK from Partition B
+	 * Only applicable for DPHY mode with 4 lanes.
+	 */
+	uint32_t clk_partition;
+
 	/** Reserved */
-	uint32_t pad32__;
+	uint32_t pad32__[2];
 } CAPTURE_IVC_ALIGN;
 
 /**
@@ -3009,10 +3017,20 @@ struct nvcsi_cil_config {
 		uint8_t afe_hf_gain;
 		/** @a edge_delay [-10,9] */
 		int8_t edge_delay;
+		/**
+		 * DPHY deskew compare threshold [0,15].
+		 * 0 = use default (reset value).
+		 */
+		uint8_t deskew_compare;
+		/**
+		 * DPHY deskew settle time [0,15].
+		 * 0 = use default (reset value).
+		 */
+		uint8_t deskew_settle;
 	} tuning;
 
-	/** Reserved */
-	uint8_t pad8__;
+	/** Reserved for 7-byte alignment */
+	uint8_t pad__[7];
 
 } CAPTURE_IVC_ALIGN;
 
