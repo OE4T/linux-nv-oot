@@ -184,7 +184,7 @@ CONFIG_RTW_APPEND_LOGLEVEL = n
 
 # enable /proc/net/rtlxxxx/ debug interfaces
 CONFIG_PROC_DEBUG = y
-CONFIG_SELF_DIAG_INFO = y
+#CONFIG_SELF_DIAG_INFO = y
 ############################# MLO #############################
 CONFIG_80211BE_EHT = n
 ifeq ($(CONFIG_80211BE_EHT), y)
