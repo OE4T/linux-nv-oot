@@ -69,7 +69,6 @@ notify_fw_get_tegra_stats(struct pva_kmd_device *pva,
 	uint64_t duration = 0U;
 
 	if (stats_enabled == false) {
-		pva_kmd_log_info("Tegra stats are disabled");
 		goto err_out;
 	}
 
