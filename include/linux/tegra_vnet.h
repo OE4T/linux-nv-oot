@@ -1,20 +1,39 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2020-2023, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2020-2026, NVIDIA CORPORATION.  All rights reserved.
  */
 
 #ifndef PCIE_EPF_TEGRA_DMA_H
 #define PCIE_EPF_TEGRA_DMA_H
 
+#ifdef CONFIG_PAGE_POOL
+#include <linux/skbuff.h>
+#include <net/page_pool/types.h>
+#endif
+
 #ifndef PCI_DEVICE_ID_NVIDIA_JETSON_AGX_NETWORK
 #define PCI_DEVICE_ID_NVIDIA_JETSON_AGX_NETWORK     0x2296
 #endif
 
+#ifndef PCI_DEVICE_ID_NVIDIA_JETSON_THOR_NETWORK
+#define PCI_DEVICE_ID_NVIDIA_JETSON_THOR_NETWORK    0x22D7
+#endif
+
+/* SoC ID enumeration for tegra_vnet driver */
+enum tegra_vnet_soc_id {
+	TEGRA_VNET_SOC_T234 = 0,
+	TEGRA_VNET_SOC_T264 = 1,
+	TEGRA_VNET_SOC_MAX
+};
+
+/* T264 specific syncpoint base */
+#define T264_SHIM_BASE  0x81C0000000ULL
+
 #define DMA_RD_CHNL_NUM			2
 #define DMA_WR_CHNL_NUM			4
 
+/* Enabled for Milestone: DMA support with tegra-pcie-dma wrapper */
 #define ENABLE_DMA 1
-
 #define DMA_WR_DATA_CH 0
 #define DMA_RD_DATA_CH 0
 
@@ -25,143 +44,21 @@
 #define TVNET_MIN_MTU 68
 #define TVNET_MAX_MTU TVNET_DEFAULT_MTU
 
-#define TVNET_NAPI_WEIGHT	64
-
-#define RING_COUNT 256
+#define RING_COUNT	2048
 
 /* Allocate 100% extra desc to handle the drift between empty & full buffer */
 #define DMA_DESC_COUNT (2 * RING_COUNT)
 
-
-/* DMA base offset starts at 0x20000 from ATU_DMA base */
-#define DMA_OFFSET 0x20000
-
-/* Common registers */
-#define DMA_WRITE_ENGINE_EN_OFF		0xC
-#define DMA_WRITE_ENGINE_EN_OFF_ENABLE	BIT(0)
-#define DMA_WRITE_ENGINE_EN_OFF_DISABLE	0
-
-#define DMA_WRITE_DOORBELL_OFF		0x10
-#define DMA_WRITE_DOORBELL_OFF_WR_STOP	BIT(31)
-
-#define DMA_READ_ENGINE_EN_OFF		0x2C
-#define DMA_READ_ENGINE_EN_OFF_ENABLE	BIT(0)
-#define DMA_READ_ENGINE_EN_OFF_DISABLE	0
-
-#define DMA_READ_DOORBELL_OFF		0x30
-#define DMA_READ_DOORBELL_OFF_RD_STOP	BIT(31)
-
-#define DMA_WRITE_INT_STATUS_OFF	0x4C
-#define DMA_WRITE_INT_MASK_OFF		0x54
-#define DMA_WRITE_INT_CLEAR_OFF		0x58
-
-#define DMA_WRITE_DONE_IMWR_LOW_OFF	0x60
-#define DMA_WRITE_DONE_IMWR_HIGH_OFF	0x64
-#define DMA_WRITE_ABORT_IMWR_LOW_OFF	0x68
-#define DMA_WRITE_ABORT_IMWR_HIGH_OFF	0x6C
-
-#define DMA_WRITE_IMWR_DATA_OFF_BASE	0x70
-
-#define DMA_WRITE_LINKED_LIST_ERR_EN_OFF	0x90
-#define DMA_READ_INT_STATUS_OFF		0xA0
-#define DMA_READ_INT_MASK_OFF		0xA8
-#define DMA_READ_INT_CLEAR_OFF		0xAC
-
-#define DMA_READ_LINKED_LIST_ERR_EN_OFF	0xC4
-#define DMA_READ_DONE_IMWR_LOW_OFF	0xCC
-#define DMA_READ_DONE_IMWR_HIGH_OFF	0xD0
-#define DMA_READ_ABORT_IMWR_LOW_OFF	0xD4
-#define DMA_READ_ABORT_IMWR_HIGH_OFF	0xD8
-
-#define DMA_READ_IMWR_DATA_OFF_BASE	0xDC
-
-/* Channel specific registers */
-#define DMA_CH_CONTROL1_OFF_WRCH		0x0
-#define DMA_CH_CONTROL1_OFF_WRCH_LLE		BIT(9)
-#define DMA_CH_CONTROL1_OFF_WRCH_CCS		BIT(8)
-#define DMA_CH_CONTROL1_OFF_WRCH_CS_MASK	GENMASK(6, 5)
-#define DMA_CH_CONTROL1_OFF_WRCH_CS_SHIFT	5
-#define DMA_CH_CONTROL1_OFF_WRCH_RIE		BIT(4)
-#define DMA_CH_CONTROL1_OFF_WRCH_LIE		BIT(3)
-#define DMA_CH_CONTROL1_OFF_WRCH_LLP		BIT(2)
-#define DMA_CH_CONTROL1_OFF_WRCH_CB		BIT(0)
-
-#define DMA_TRANSFER_SIZE_OFF_WRCH		0x8
-#define DMA_SAR_LOW_OFF_WRCH			0xC
-#define DMA_SAR_HIGH_OFF_WRCH			0x10
-#define DMA_DAR_LOW_OFF_WRCH			0x14
-#define DMA_DAR_HIGH_OFF_WRCH			0x18
-#define DMA_LLP_LOW_OFF_WRCH			0x1C
-#define DMA_LLP_HIGH_OFF_WRCH			0x20
-
-#define DMA_CH_CONTROL1_OFF_RDCH		0x100
-#define DMA_CH_CONTROL1_OFF_RDCH_LLE		BIT(9)
-#define DMA_CH_CONTROL1_OFF_RDCH_CCS		BIT(8)
-#define DMA_CH_CONTROL1_OFF_RDCH_CS_MASK	GENMASK(6, 5)
-#define DMA_CH_CONTROL1_OFF_RDCH_CS_SHIFT	5
-#define DMA_CH_CONTROL1_OFF_RDCH_RIE		BIT(4)
-#define DMA_CH_CONTROL1_OFF_RDCH_LIE		BIT(3)
-#define DMA_CH_CONTROL1_OFF_RDCH_LLP		BIT(2)
-#define DMA_CH_CONTROL1_OFF_RDCH_CB		BIT(0)
-
-#define DMA_TRANSFER_SIZE_OFF_RDCH		0x108
-#define DMA_SAR_LOW_OFF_RDCH			0x10c
-#define DMA_SAR_HIGH_OFF_RDCH			0x110
-#define DMA_DAR_LOW_OFF_RDCH			0x114
-#define DMA_DAR_HIGH_OFF_RDCH			0x118
-#define DMA_LLP_LOW_OFF_RDCH			0x11c
-#define DMA_LLP_HIGH_OFF_RDCH			0x120
-
-static inline void dma_common_wr(void __iomem *p, u32 val, u32 offset)
-{
-	writel(val, p + offset);
-}
-
-static inline void dma_common_wr16(void __iomem *p, u16 val, u32 offset)
-{
-	writew(val, p + offset);
-}
-
-static inline void dma_common_wr8(void __iomem *p, u16 val, u32 offset)
-{
-	writeb(val, p + offset);
-}
-
-static inline u32 dma_common_rd(void __iomem *p, u32 offset)
-{
-	return readl(p + offset);
-}
-
-static inline void dma_channel_wr(void __iomem *p, u8 channel, u32 val,
-				  u32 offset)
-{
-	writel(val, (0x200 * (channel + 1)) + p + offset);
-}
-
-static inline u32 dma_channel_rd(void __iomem *p, u8 channel, u32 offset)
-{
-	return readl((0x200 * (channel + 1)) + p + offset);
-}
-
-struct tvnet_dma_ctrl {
-	u32 cb:1;
-	u32 tcb:1;
-	u32 llp:1;
-	u32 lie:1;
-	u32 rie:1;
-};
-
-struct tvnet_dma_desc {
-	volatile union {
-		struct tvnet_dma_ctrl ctrl_e;
-		u32 ctrl_d;
-	} ctrl_reg;
-	u32 size;
-	u32 sar_low;
-	u32 sar_high;
-	u32 dar_low;
-	u32 dar_high;
-};
+/*
+ * Cookie space for RX empty-buffer tracking.
+ *
+ * The old implementation keyed tracking nodes by DMA/IOVA address via xarray.
+ * To avoid per-packet xarray lookups, we attach a cookie to each posted EMPTY
+ * buffer and have the peer echo it back in the FULL message.
+ *
+ * Cookie values must not be re-used while a buffer is still in flight.
+ */
+#define TVNET_RX_COOKIE_MAX	8192
 
 enum irq_type {
 	/* No IRQ available in this slot */
@@ -245,10 +142,14 @@ struct data_msg {
 	union {
 		struct {
 			u32 buffer_len;
+			u16 cookie;
+			u16 reserved;
 			u64 pcie_address;
 		} empty_buffer;
 		struct {
 			u32 packet_size;
+			u16 cookie;
+			u16 reserved;
 			u64 pcie_address;
 		} full_buffer;
 		u32 reserved[7];
@@ -295,16 +196,26 @@ struct host_ring_buf {
 };
 
 struct ep2h_empty_list {
-	int len;
+	u32 len;
 	dma_addr_t iova;
+#if ENABLE_DMA
+	/* Buffer base DMA address (e.g., for page_pool sync) */
+	dma_addr_t dma_base;
+	/* Data offset from dma_base that device writes into */
+	u32 offset;
+#endif
 	struct sk_buff *skb;
 	struct list_head list;
 };
 
 struct h2ep_empty_list {
-	int size;
+	u32 size;
 #if ENABLE_DMA
 	struct sk_buff *skb;
+	/* Buffer base DMA address (e.g., for page_pool sync) */
+	dma_addr_t dma_base;
+	/* Data offset from dma_base that device writes into */
+	u32 offset;
 #else
 	struct page *page;
 	void *virt;
@@ -325,6 +236,49 @@ enum os_link_state {
 };
 
 #if ENABLE_DMA
+/*
+ * TX batching size used by both Host (RP) and EP vnet drivers.
+ * Keep this as a shared constant so both sides stay in sync.
+ */
+#define TVNET_TX_BATCH_MAX	64
+
+/*
+ * TX batch flush delay (microseconds).
+ * - Normal traffic: keep latency small.
+ * - netdev_xmit_more()==true: extend window slightly to accumulate more SKBs.
+ */
+#define TVNET_TX_BATCH_DELAY_US		200
+#define TVNET_TX_BATCH_DELAY_MORE_US	400
+
+#ifdef CONFIG_PAGE_POOL
+/* Headroom used for page_pool-backed RX buffers */
+#define TVNET_PP_HEADROOM (NET_SKB_PAD + NET_IP_ALIGN)
+
+static inline void tvnet_pp_init_params(struct page_pool_params *pp,
+					struct device *dev,
+					struct net_device *ndev,
+					unsigned int order)
+{
+	/*
+	 * Keep this minimal and shared across host + EP:
+	 * - DMA mapped pages, with DMA_SYNC_DEV enabled so recycled pages are
+	 *   synced for device when reallocated from the pool.
+	 * - offset defines where device writes packet data (after headroom).
+	 */
+	*pp = (struct page_pool_params){
+		.flags		= PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+		.order		= order,
+		.pool_size	= RING_COUNT * 2,
+		.nid		= NUMA_NO_NODE,
+		.dev		= dev,
+		.dma_dir	= DMA_FROM_DEVICE,
+		.max_len	= TVNET_MAX_MTU + ETH_HLEN,
+		.offset		= TVNET_PP_HEADROOM,
+		.netdev		= ndev,
+	};
+}
+#endif
+
 struct dma_desc_cnt {
 	u32 rd_cnt;
 	u32 wr_cnt;
@@ -415,6 +369,5 @@ static inline u32 tvnet_ivc_get_rd_cnt(struct tvnet_counter *counter)
 {
 	return READ_ONCE(*counter->rd);
 }
-
 
 #endif
