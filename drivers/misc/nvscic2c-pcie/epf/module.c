@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPDX-FileCopyrightText: Copyright (c) 2022-2025, NVIDIA CORPORATION & AFFILIATES.
- * All rights reserved.
- */
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -53,7 +50,6 @@ static const struct pci_epf_device_id nvscic2c_pcie_epf_ids[] = {
 	{},
 };
 
-#if defined(NV_PLATFORM_MSI_DOMAIN_ALLOC_IRQS_PRESENT)
 #define MSI_MSG_DATA_OFFSET \
 	((TEGRA264_PCIE_DMA_MSI_REMOTE_VEC + 2) - TEGRA264_PCIE_DMA_MSI_LOCAL_VEC)
 static void
@@ -74,7 +70,6 @@ nvscic2c_dma_epf_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
 		msi_data = msg->data - MSI_MSG_DATA_OFFSET;
 	}
 }
-#endif
 
 static irqreturn_t
 nvscic2c_dma_epf_irq(int irq, void *arg)
@@ -90,8 +85,10 @@ free_msi_data(struct driver_ctx_t *drv_ctx, struct platform_device *pdev)
 		drv_ctx->epf_ctx->isr_registered = false;
 	}
 
-#if defined(NV_PLATFORM_MSI_DOMAIN_FREE_IRQS_PRESENT)
 	if (drv_ctx->chip_id == TEGRA264)
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux v6.9 */
+		platform_device_msi_free_irqs_all(&pdev->dev);
+#else
 		platform_msi_domain_free_irqs(&pdev->dev);
 #endif
 }
@@ -112,13 +109,16 @@ get_msi_data(struct driver_ctx_t *drv_ctx, struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-#if defined(NV_PLATFORM_MSI_DOMAIN_ALLOC_IRQS_PRESENT)
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux v6.9 */
+	ret = platform_device_msi_init_and_alloc_irqs(&pdev->dev, 8,
+						nvscic2c_dma_epf_write_msi_msg);
+#else
 	ret = platform_msi_domain_alloc_irqs(&pdev->dev, 8, nvscic2c_dma_epf_write_msi_msg);
+#endif
 	if (ret < 0) {
 		pr_err("failed to allocate MSIs: %d\n", ret);
 		return ret;
 	}
-#endif
 #if defined(NV_MSI_GET_VIRQ_PRESENT) /* Linux v6.1 */
 	drv_ctx->msi_irq = msi_get_virq(&pdev->dev, TEGRA264_PCIE_DMA_MSI_LOCAL_VEC);
 	epf_ctx->irq = msi_get_virq(&pdev->dev, (TEGRA264_PCIE_DMA_MSI_REMOTE_VEC + 2));

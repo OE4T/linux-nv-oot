@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2023-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 PATH="${PATH}:/bin:/sbin:/usr/bin"
 
@@ -8189,22 +8189,6 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_OF_PROPERTY_FOR_EACH_REMOVED_INTERNAL_ARGS" "" "types"
         ;;
 
-        platform_msi_domain_alloc_irqs)
-            #
-            # Determine if the platform_msi_domain_alloc_irqs() API available or not.
-            #
-            # API platform_msi_domain_free_irqs() is dropped from Linux 6.9
-            # with commit 1a4671ff7a903e87 ("platform-msi: Remove unused interfaces")
-            #
-            CODE="
-            #include <linux/msi.h>
-            void conftest_platform_msi_domain_alloc_irqs(void) {
-                platform_msi_domain_alloc_irqs();
-            }"
-
-            compile_check_conftest "$CODE" "NV_PLATFORM_MSI_DOMAIN_ALLOC_IRQS_PRESENT" "" "functions"
-        ;;
-
         page_struct_has___folio_index)
             #
             # Determine if the 'page' structure has '__folio_index' member.
@@ -8221,20 +8205,26 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_PAGE_STRUCT_HAS___FOLIO_INDEX" "" "types"
         ;;
 
-        platform_msi_domain_free_irqs)
+        platform_device_msi_init_and_alloc_irqs)
             #
-            # Determine if the platform_msi_domain_free_irqs() API available or not.
+            # Determine if the functions platform_device_msi_init_and_alloc_irqs()
+            # and platform_device_msi_free_irqs_all() are present. These functions
+            # were added to replace the legacy platform_msi_domain_alloc_irqs() and
+            # platform_msi_domain_free_irqs function which were removed completely
+            # in Linux v6.9
             #
-            # API platform_msi_domain_free_irqs() is dropped from Linux 6.9
-            # with commit 1a4671ff7a903e87 ("platform-msi: Remove unused interfaces")
+            # Upstream Linux change info:
+            # - Commit c88f9110bfbc ("platform-msi: Prepare for real per device domains")
+            # - Added in Linux v6.9.
             #
             CODE="
             #include <linux/msi.h>
-            void conftest_platform_msi_domain_free_irqs(void) {
-                platform_msi_domain_free_irqs();
+            void conftest_platform_device_msi_init_and_alloc_irqs(void) {
+                platform_device_msi_init_and_alloc_irqs();
             }"
 
-            compile_check_conftest "$CODE" "NV_PLATFORM_MSI_DOMAIN_FREE_IRQS_PRESENT" "" "functions"
+            compile_check_conftest "$CODE" \
+                "NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT" "" "functions"
         ;;
 
         pwm_chip_struct_has_base_arg)

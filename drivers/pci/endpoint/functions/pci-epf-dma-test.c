@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 /*
  * PCIe DMA EPF test framework for Tegra PCIe.
  */
@@ -543,7 +543,9 @@ static void pcie_dma_epf_unbind(struct pci_epf *epf)
 #endif
 		free_irq(irq, epfnv);
 
-#if defined(NV_PLATFORM_MSI_DOMAIN_FREE_IRQS_PRESENT) /* Linux v6.9 */
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux v6.9 */
+		platform_device_msi_free_irqs_all(&pdev->dev);
+#else
 		platform_msi_domain_free_irqs(&pdev->dev);
 #endif
 	}
@@ -556,7 +558,6 @@ static void pcie_dma_epf_unbind(struct pci_epf *epf)
 	lpci_epf_free_space(epf, epfnv->bar_virt, bar);
 }
 
-#if defined(NV_PLATFORM_MSI_DOMAIN_ALLOC_IRQS_PRESENT) /* Linux 6.9 */
 static void pcie_dma_epf_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
 {
 	if (gepfnv->edma.msi_addr == 0) {
@@ -571,7 +572,6 @@ static void pcie_dma_epf_write_msi_msg(struct msi_desc *desc, struct msi_msg *ms
 					TEGRA264_PCIE_DMA_MSI_LOCAL_VEC;
 	}
 }
-#endif
 
 static irqreturn_t pcie_dma_epf_irq(int irq, void *arg)
 {
@@ -666,13 +666,16 @@ static int pcie_dma_epf_bind(struct pci_epf *epf)
 			goto fail_kasnprintf;
 		}
 
-#if defined(NV_PLATFORM_MSI_DOMAIN_ALLOC_IRQS_PRESENT) /* Linux 6.9 */
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux 6.9 */
+		ret = platform_device_msi_init_and_alloc_irqs(&pdev->dev, 8,
+						pcie_dma_epf_write_msi_msg);
+#else
 		ret = platform_msi_domain_alloc_irqs(&pdev->dev, 8, pcie_dma_epf_write_msi_msg);
+#endif
 		if (ret < 0) {
 			dev_err(fdev, "failed to allocate MSIs: %d\n", ret);
 			goto fail_kasnprintf;
 		}
-#endif
 #if defined(NV_MSI_GET_VIRQ_PRESENT) /* Linux v6.1 */
 		epfnv->edma.msi_irq = msi_get_virq(&pdev->dev, TEGRA264_PCIE_DMA_MSI_LOCAL_VEC);
 		irq = msi_get_virq(&pdev->dev, TEGRA264_PCIE_DMA_MSI_CRC_VEC);
@@ -719,8 +722,10 @@ fail_get_features:
 	if (epfnv->chip_id == TEGRA264)
 		free_irq(irq, epfnv);
 fail_msi_alloc:
-#if defined(NV_PLATFORM_MSI_DOMAIN_FREE_IRQS_PRESENT) /* Linux v6.9 */
 	if (epfnv->chip_id == TEGRA264)
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux v6.9 */
+		platform_device_msi_free_irqs_all(&pdev->dev);
+#else
 		platform_msi_domain_free_irqs(&pdev->dev);
 #endif
 fail_kasnprintf:

@@ -1,6 +1,6 @@
 ###########################################################################
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2023-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Makefile file for NVIDIA Linux conftest
 ###########################################################################
@@ -194,8 +194,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += gpio_device_get_chip
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += of_property_for_each_u32_removed_internal_args
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += page_struct_has___folio_index
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pde_data
-NV_CONFTEST_FUNCTION_COMPILE_TESTS += platform_msi_domain_alloc_irqs
-NV_CONFTEST_FUNCTION_COMPILE_TESTS += platform_msi_domain_free_irqs
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += platform_device_msi_init_and_alloc_irqs
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_chip_struct_has_base_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_chip_struct_has_struct_device
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_ops_struct_has_owner

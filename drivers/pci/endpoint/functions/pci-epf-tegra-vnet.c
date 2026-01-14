@@ -1705,6 +1705,15 @@ static void tvnet_ep_platform_msi_write(struct msi_desc *desc, struct msi_msg *m
 	}
 }
 
+static void tvnet_ep_platform_msi_free_irqs(struct device *cdev)
+{
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux v6.9 */
+	platform_device_msi_free_irqs_all(cdev);
+#else
+	platform_msi_domain_free_irqs(cdev);
+#endif
+}
+
 /* Initialize DMA using tegra-pcie-dma wrapper library for local DMA write */
 static int tvnet_ep_dma_init(struct pci_epf_tvnet *tvnet)
 {
@@ -1734,7 +1743,12 @@ static int tvnet_ep_dma_init(struct pci_epf_tvnet *tvnet)
 		dev_set_drvdata(cdev, tvnet);
 
 		/* Allocate 8 platform MSIs on cdev (which has IOMMU domain for IOVAs) */
+#if defined(NV_PLATFORM_DEVICE_MSI_INIT_AND_ALLOC_IRQS_PRESENT) /* Linux 6.9 */
+		ret = platform_device_msi_init_and_alloc_irqs(cdev, 8,
+						tvnet_ep_platform_msi_write);
+#else
 		ret = platform_msi_domain_alloc_irqs(cdev, 8, tvnet_ep_platform_msi_write);
+#endif
 
 		/* Get MSI IRQ for LOCAL DMA vector (vector 4) */
 #if defined(NV_MSI_GET_VIRQ_PRESENT) /* Linux v6.1 */
@@ -1754,7 +1768,7 @@ static int tvnet_ep_dma_init(struct pci_epf_tvnet *tvnet)
 #endif
 		if (tvnet->dma_msi_irq < 0) {
 			dev_err(fdev, "Failed to get MSI IRQ for LOCAL vector\n");
-			platform_msi_domain_free_irqs(cdev);
+			tvnet_ep_platform_msi_free_irqs(cdev);
 			return -EINVAL;
 		}
 
@@ -1775,7 +1789,7 @@ static int tvnet_ep_dma_init(struct pci_epf_tvnet *tvnet)
 	if (status != TEGRA_PCIE_DMA_SUCCESS) {
 		dev_err(fdev, "tegra_pcie_dma_initialize() failed: %d\n", status);
 		if (tvnet->soc_id == TEGRA_VNET_SOC_T264)
-			platform_msi_domain_free_irqs(cdev);
+			tvnet_ep_platform_msi_free_irqs(cdev);
 		return -EIO;
 	}
 
@@ -1786,7 +1800,7 @@ static int tvnet_ep_dma_init(struct pci_epf_tvnet *tvnet)
 		if (ret) {
 			dev_err(fdev, "Failed to allocate platform MSI: %d\n", ret);
 			tegra_pcie_dma_deinit(&tvnet->dma_cookie);
-			platform_msi_domain_free_irqs(cdev);
+			tvnet_ep_platform_msi_free_irqs(cdev);
 			return ret;
 		}
 		dev_info(fdev, "T264 DMA tvnet: %p MSI: addr=0x%llx data=0x%x\n",
@@ -1797,7 +1811,7 @@ static int tvnet_ep_dma_init(struct pci_epf_tvnet *tvnet)
 		if (status != TEGRA_PCIE_DMA_SUCCESS) {
 			dev_err(fdev, "tegra_pcie_dma_set_msi() failed: %d\n", status);
 			tegra_pcie_dma_deinit(&tvnet->dma_cookie);
-			platform_msi_domain_free_irqs(cdev);
+			tvnet_ep_platform_msi_free_irqs(cdev);
 			return -EIO;
 		}
 	}
@@ -3050,7 +3064,7 @@ static void tvnet_ep_pci_epf_unbind(struct pci_epf *epf)
 		struct pci_epc *epc = epf->epc;
 		struct device *cdev = epc->dev.parent;
 
-		platform_msi_domain_free_irqs(cdev);
+		tvnet_ep_platform_msi_free_irqs(cdev);
 	}
 #else
 	/* Cancel RX cleanup work and flush any pending items */
