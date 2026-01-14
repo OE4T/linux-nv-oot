@@ -8189,6 +8189,23 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_OF_PROPERTY_FOR_EACH_REMOVED_INTERNAL_ARGS" "" "types"
         ;;
 
+        page_pool_params_struct_has_netdev)
+            #
+            # Determine if the 'page_pool_params' structure has 'netdev' member.
+            #
+            # Upstream Linux change info:
+            # - Commit 083772c9f972 ("net: page_pool: record pools per netdev")
+            # - Added in Linux v6.8
+            #
+            CODE="
+            #include <include/net/page_pool/types.h>
+            int conftest_page_pool_params_struct_has_netdev(void) {
+                return offsetof(struct page_pool_params, netdev);
+            }"
+
+            compile_check_conftest "$CODE" "NV_PAGE_POOL_PARAMS_STRUCT_HAS_NETDEV" "" "types"
+        ;;
+
         page_struct_has___folio_index)
             #
             # Determine if the 'page' structure has '__folio_index' member.

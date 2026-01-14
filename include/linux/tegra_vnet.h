@@ -279,7 +279,9 @@ static inline void tvnet_pp_init_params(struct page_pool_params *pp,
 		.dma_dir	= DMA_FROM_DEVICE,
 		.max_len	= TVNET_MAX_MTU + ETH_HLEN,
 		.offset		= TVNET_PP_HEADROOM,
+#if defined(NV_PAGE_POOL_PARAMS_STRUCT_HAS_NETDEV) /* Linux v6.8 */
 		.netdev		= ndev,
+#endif
 	};
 }
 #endif
