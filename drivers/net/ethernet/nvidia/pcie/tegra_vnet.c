@@ -30,7 +30,11 @@
 #include <linux/tegra_vnet.h>
 #include <linux/tegra-pcie-dma.h>
 #include <linux/workqueue.h>
+#if defined(NV_NET_PAGE_POOL_H_PRESENT)
+#include <net/page_pool.h>
+#else
 #include <net/page_pool/helpers.h>
+#endif
 
 #if ENABLE_DMA
 struct tvnet_dma_tx_ctx;

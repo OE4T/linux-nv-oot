@@ -22,7 +22,11 @@
 #include <linux/tegra_vnet.h>
 #include <linux/tegra-pcie-dma.h>
 #include <linux/msi.h>
+#if defined(NV_NET_PAGE_POOL_H_PRESENT)
+#include <net/page_pool.h>
+#else
 #include <net/page_pool/helpers.h>
+#endif
 #include <soc/tegra/fuse-helper.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)

@@ -1,14 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020-2026, NVIDIA CORPORATION.  All rights reserved.
+/* SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #ifndef PCIE_EPF_TEGRA_DMA_H
 #define PCIE_EPF_TEGRA_DMA_H
 
+#include <nvidia/conftest.h>
+
 #ifdef CONFIG_PAGE_POOL
 #include <linux/skbuff.h>
+#if defined(NV_NET_PAGE_POOL_H_PRESENT)
+#include <net/page_pool.h>
+#else
 #include <net/page_pool/types.h>
+#endif
 #endif
 
 #ifndef PCI_DEVICE_ID_NVIDIA_JETSON_AGX_NETWORK
