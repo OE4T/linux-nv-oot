@@ -1697,8 +1697,13 @@ static int tvnet_host_probe(struct pci_dev *pdev,
 	init_llist_head(&tvnet->tx_complete_list);
 	INIT_DELAYED_WORK(&tvnet->tx_complete_work, tvnet_host_tx_complete_work);
 	INIT_DELAYED_WORK(&tvnet->tx_batch_flush_work, tvnet_host_tx_batch_flush_work);
+#if defined(NV_HRTIMER_SETUP_PRESENT) /* Linux v6.13 */
+	hrtimer_setup(&tvnet->tx_batch_timer, &tvnet_host_tx_batch_timer_fn,
+		      CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+#else
 	hrtimer_init(&tvnet->tx_batch_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	tvnet->tx_batch_timer.function = tvnet_host_tx_batch_timer_fn;
+#endif
 	tvnet->tx_ctx_pool = mempool_create_kmalloc_pool(DMA_DESC_COUNT,
 							 sizeof(struct tvnet_dma_tx_ctx));
 	if (!tvnet->tx_ctx_pool) {
