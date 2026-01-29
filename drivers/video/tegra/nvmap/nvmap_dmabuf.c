@@ -24,7 +24,6 @@
 #include <linux/of.h>
 #include <linux/version.h>
 #include <linux/iommu.h>
-#include <linux/mmzone.h>
 #if defined(NV_LINUX_IOSYS_MAP_H_PRESENT)
 #include <linux/iosys-map.h>
 #endif
@@ -202,26 +201,6 @@ static struct sg_table *nvmap_dmabuf_map_dma_buf(struct dma_buf_attachment *atta
 	} else if (info->handle->heap_type == NVMAP_HEAP_CARVEOUT_VPR &&
 			access_vpr_phys(attach->dev)) {
 		sg_dma_address(sgt->sgl) = 0;
-	} else if (!info->handle->heap_pgalloc &&
-			!pfn_valid(page_to_pfn(sg_page(sgt->sgl)))) {
-		/*
-		 * Handle carveout memory without a valid struct page.
-		 * With CONFIG_PCI_P2PDMA enabled, dma_map_sg_attrs() calls
-		 * is_pci_p2pdma_page() which dereferences sg_page(). For CO
-		 * memory without a backing struct page, this causes a paging
-		 * fault. Use dma_map_resource() instead which maps device
-		 * resources using physical address directly.
-		 */
-		dma_addr_t addr;
-
-		dma_set_attr(DMA_ATTR_SKIP_CPU_SYNC, __DMA_ATTR(attrs));
-		addr = dma_map_resource(attach->dev, sg_phys(sgt->sgl),
-					info->handle->size, dir,
-					__DMA_ATTR(attrs));
-		if (dma_mapping_error(attach->dev, addr))
-			goto err_map;
-		sg_dma_address(sgt->sgl) = addr;
-		sg_dma_len(sgt->sgl) = info->handle->size;
 	} else {
 		dma_set_attr(DMA_ATTR_SKIP_CPU_SYNC, __DMA_ATTR(attrs));
 		ents = dma_map_sg_attrs(attach->dev, sgt->sgl,
@@ -269,12 +248,6 @@ static void __nvmap_dmabuf_unmap_dma_buf(struct nvmap_handle_sgt *nvmap_sgt)
 	} else if (info->handle->heap_type == NVMAP_HEAP_CARVEOUT_VPR &&
 			access_vpr_phys(dev)) {
 		sg_dma_address(sgt->sgl) = 0;
-	} else if (!info->handle->heap_pgalloc &&
-			!pfn_valid(page_to_pfn(sg_page(sgt->sgl)))) {
-		/* Carveout MMIO memory - mapped via dma_map_resource() */
-		dma_unmap_resource(dev, sg_dma_address(sgt->sgl),
-				   sg_dma_len(sgt->sgl), dir,
-				   DMA_ATTR_SKIP_CPU_SYNC);
 	} else {
 		dma_unmap_sg_attrs(dev,
 				   sgt->sgl, sgt->nents,
