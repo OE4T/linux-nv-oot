@@ -1933,7 +1933,7 @@ static int mttcan_remove(struct platform_device *pdev)
 
 	dev_info(&dev->dev, "%s\n", __func__);
 
-	del_timer_sync(&priv->timer);
+	timer_delete_sync(&priv->timer);
 	mttcan_delete_sys_files(&dev->dev);
 	unregister_mttcan_dev(dev);
 	mttcan_unprepare_clock(priv);
