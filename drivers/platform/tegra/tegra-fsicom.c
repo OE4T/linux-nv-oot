@@ -489,7 +489,7 @@ static struct platform_driver fsicom_client = {
 
 module_platform_driver(fsicom_client);
 
-MODULE_IMPORT_NS(DMA_BUF);
+MODULE_IMPORT_NS("DMA_BUF");
 MODULE_DESCRIPTION("FSI-CCPLEX-COM driver");
 MODULE_AUTHOR("Prashant Shaw <pshaw@nvidia.com>");
 MODULE_LICENSE("GPL v2");

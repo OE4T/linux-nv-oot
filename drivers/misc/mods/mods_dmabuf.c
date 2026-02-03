@@ -8,7 +8,7 @@
 
 #include "mods_internal.h"
 
-MODULE_IMPORT_NS(DMA_BUF);
+MODULE_IMPORT_NS("DMA_BUF");
 
 static struct device *dummy_device;
 

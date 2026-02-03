@@ -1762,6 +1762,6 @@ static void __exit capture_vi_exit(void)
 module_init(capture_vi_init);
 module_exit(capture_vi_exit);
 
-MODULE_IMPORT_NS(DMA_BUF);
+MODULE_IMPORT_NS("DMA_BUF");
 MODULE_DESCRIPTION("tegra fusa-capture driver");
 MODULE_LICENSE("GPL");

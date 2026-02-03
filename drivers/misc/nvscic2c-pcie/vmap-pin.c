@@ -380,4 +380,4 @@ err:
 	return ret;
 }
 
-MODULE_IMPORT_NS(DMA_BUF);
+MODULE_IMPORT_NS("DMA_BUF");
