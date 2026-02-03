@@ -353,7 +353,7 @@ static int tegra_uss_request_gpio(struct platform_device *pdev, const char *name
 		return -EINVAL;
 	}
 
-	rc = devm_gpio_request(&pdev->dev, gpio, name);
+	rc = devm_gpio_request_one(&pdev->dev, gpio, GPIOF_OUT_INIT_LOW, name);
 	if (rc) {
 		dev_err(&pdev->dev, "could not request %s %d\n", name, rc);
 		return rc;
