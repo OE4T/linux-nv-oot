@@ -290,7 +290,7 @@ static int ether_test_phy_loopback(struct ether_priv_data *pdata)
 	if (!pdata->phydev)
 		return -ENODEV;
 
-	ret = phy_loopback(pdata->phydev, true);
+	ret = phy_loopback(pdata->phydev, true, 0);
 	if (ret != 0 && ret != -EBUSY)
 		return ret;
 
@@ -406,7 +406,7 @@ void ether_selftest_run(struct net_device *dev,
 		case ETHER_LOOPBACK_PHY:
 			ret = -EOPNOTSUPP;
 			if (dev->phydev)
-				ret = phy_loopback(dev->phydev, true);
+				ret = phy_loopback(dev->phydev, true, 0);
 			if (!ret)
 				break;
 		/* Fallthrough */
@@ -439,7 +439,7 @@ void ether_selftest_run(struct net_device *dev,
 		case ETHER_LOOPBACK_PHY:
 			ret = -EOPNOTSUPP;
 			if (dev->phydev)
-				ret = phy_loopback(dev->phydev, false);
+				ret = phy_loopback(dev->phydev, false, 0);
 			if (!ret)
 				break;
 		/* Fallthrough */
