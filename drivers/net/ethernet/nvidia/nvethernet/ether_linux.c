@@ -6647,10 +6647,8 @@ static int ether_probe(struct platform_device *pdev)
 		chan = osi_dma->dma_chans[i];
 		atomic_set(&pdata->tx_napi[chan]->tx_usecs_timer_armed,
 			   OSI_DISABLE);
-		hrtimer_init(&pdata->tx_napi[chan]->tx_usecs_timer,
-			     CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-		pdata->tx_napi[chan]->tx_usecs_timer.function =
-			ether_tx_usecs_hrtimer;
+		hrtimer_setup(&pdata->tx_napi[chan]->tx_usecs_timer, ether_tx_usecs_hrtimer,
+                                   CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	}
 
 	ret = register_netdev(ndev);

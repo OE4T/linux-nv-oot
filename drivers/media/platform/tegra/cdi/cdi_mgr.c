@@ -1776,9 +1776,8 @@ static int cdi_mgr_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(cdi_mgr->gpios); i++) {
 		pin = &cdi_mgr->gpios[i];
 		pin->mgr = cdi_mgr;
-		hrtimer_init(&pin->timers.timer, CLOCK_MONOTONIC,
-			HRTIMER_MODE_ABS);
-		pin->timers.timer.function = &cdi_mgr_intr_timer;
+		hrtimer_setup(&pin->timers.timer, cdi_mgr_intr_timer,
+                            CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	}
 
 	if (pdev->dev.of_node) {
