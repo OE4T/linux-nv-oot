@@ -52,7 +52,7 @@ static struct hyp_shared_memory_info hyp_shared_memory_attrs[HYP_SHM_ID_NUM];
 
 /* Map the HV trace buffer to the calling user process */
 static int hvc_sysfs_mmap(struct file *fp, struct kobject *ko,
-	struct bin_attribute *attr, struct vm_area_struct *vma)
+	const struct bin_attribute *attr, struct vm_area_struct *vma)
 {
 	struct hyp_shared_memory_info *hyp_shm_info =
 		container_of(attr, struct hyp_shared_memory_info, attr);
@@ -91,7 +91,7 @@ static int hvc_create_sysfs(
 }
 
 static ssize_t log_mask_read(struct file *fp, struct kobject *ko,
-	struct bin_attribute *attr, char *buf, loff_t pos, size_t size)
+	const struct bin_attribute *attr, char *buf, loff_t pos, size_t size)
 {
 	if (size == sizeof(uint64_t))
 		hyp_trace_get_mask((uint64_t *)buf);
@@ -99,7 +99,7 @@ static ssize_t log_mask_read(struct file *fp, struct kobject *ko,
 }
 
 static ssize_t log_mask_write(struct file *fp, struct kobject *ko,
-	struct bin_attribute *attr, char *buf, loff_t pos, size_t size)
+	const struct bin_attribute *attr, char *buf, loff_t pos, size_t size)
 {
 	if (size == sizeof(uint64_t))
 		hyp_trace_set_mask(*(uint64_t *)buf);
