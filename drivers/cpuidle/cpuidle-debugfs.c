@@ -28,7 +28,7 @@ static void suspend_all_device_irqs(void)
 	struct irq_desc *desc;
 	int irq;
 
-	for (irq = 0, data = irq_get_irq_data(irq); irq < nr_irqs;
+	for (irq = 0, data = irq_get_irq_data(irq); irq < irq_get_nr_irqs();
 			irq++, data = irq_get_irq_data(irq)) {
 		if (!data)
 			continue;
@@ -46,7 +46,7 @@ static void resume_all_device_irqs(void)
 	struct irq_desc *desc;
 	int irq;
 
-	for (irq = 0, data = irq_get_irq_data(irq); irq < nr_irqs;
+	for (irq = 0, data = irq_get_irq_data(irq); irq < irq_get_nr_irqs();
 			irq++, data = irq_get_irq_data(irq)) {
 		if (!data)
 			continue;
