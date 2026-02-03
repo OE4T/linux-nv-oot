@@ -2119,7 +2119,7 @@ static void wch_ser_set_termios(struct ser_port *port, struct WCHTERMIOS *termio
 
 static void wch_ser_timeout(struct timer_list *t)
 {
-    struct wch_ser_port *sp = from_timer(sp, t, timer);
+    struct wch_ser_port *sp = timer_container_of(sp, t, timer);
     unsigned int timeout;
     unsigned int iir;
     iir = READ_UART_IIR(sp);

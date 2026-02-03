@@ -138,7 +138,7 @@ static void bluedroid_pm_timer_expire(struct timer_list *timer)
 {
 
 	struct bluedroid_pm_data *bluedroid_pm =
-				from_timer(bluedroid_pm, timer,
+				timer_container_of(bluedroid_pm, timer,
 						bluedroid_pm_timer);
 
 	/*
@@ -267,7 +267,7 @@ static ssize_t lpm_write_proc(struct file *file, const char __user *buffer,
 			bluedroid_pm_gpio_set_value(
 				bluedroid_pm->ext_wake, 1);
 			__pm_stay_awake(&bluedroid_pm->wake_lock);
-			del_timer(&bluedroid_pm_timer);
+			timer_delete(&bluedroid_pm_timer);
 			set_bit(BT_WAKE, &bluedroid_pm->flags);
 		} else {
 			kfree(buf);
@@ -539,7 +539,7 @@ static int bluedroid_pm_remove(struct platform_device *pdev)
 		wakeup_source_destroy(&bluedroid_pm->wake_lock);
 		gpio_free(bluedroid_pm->ext_wake);
 		remove_bt_proc_interface();
-		del_timer(&bluedroid_pm_timer);
+		timer_delete(&bluedroid_pm_timer);
 	}
 	if ((gpio_is_valid(bluedroid_pm->gpio_reset)) ||
 		(gpio_is_valid(bluedroid_pm->gpio_shutdown)) ||

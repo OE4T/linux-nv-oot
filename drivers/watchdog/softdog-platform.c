@@ -38,7 +38,7 @@ struct softdog_platform_wdt {
 /* If the timer expires..  */
 static void softdog_platform_watchdog_fire(struct timer_list *t)
 {
-	struct softdog_platform_wdt *swdt = from_timer(swdt, t, watchdog_ticktock);
+	struct softdog_platform_wdt *swdt = timer_container_of(swdt, t, watchdog_ticktock);
 
 	if (swdt->is_stopped)
 		return;
