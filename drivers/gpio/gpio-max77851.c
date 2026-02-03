@@ -198,7 +198,7 @@ static int max77851_gpio_set_debounce(struct max77851_gpio *mgpio,
 	return ret;
 }
 
-static void max77851_gpio_set(struct gpio_chip *gc, unsigned int offset,
+static int max77851_gpio_set(struct gpio_chip *gc, unsigned int offset,
 			      int value)
 {
 	struct max77851_gpio *mgpio = gpiochip_get_data(gc);
@@ -211,6 +211,8 @@ static void max77851_gpio_set(struct gpio_chip *gc, unsigned int offset,
 				GPIO_CFG1_OUTPUT, val);
 	if (ret < 0)
 		dev_err(mgpio->dev, "CNFG_GPIO_OUT update failed: %d\n", ret);
+
+	return ret;
 }
 
 static int max77851_gpio_set_config(struct gpio_chip *gc, unsigned int offset,

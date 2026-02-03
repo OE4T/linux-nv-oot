@@ -194,9 +194,9 @@ static int isc_gpio_get_value(struct gpio_chip *gc, unsigned int off)
 	return gpio_val;
 }
 
-static void isc_gpio_set_value(struct gpio_chip *gc, unsigned int off, int val)
+static int isc_gpio_set_value(struct gpio_chip *gc, unsigned int off, int val)
 {
-	int idx;
+	int idx, ret;
 	struct gpio_chip *tgc = NULL;
 	struct isc_gpio_priv *isc_gpio = NULL;
 	atomic_t *ref_cnt;
@@ -204,7 +204,7 @@ static void isc_gpio_set_value(struct gpio_chip *gc, unsigned int off, int val)
 
 	isc_gpio = gpiochip_get_data(gc);
 	if (!isc_gpio)
-		return;
+		return -EINVAL;
 
 	mutex_lock(&isc_gpio->mutex);
 
@@ -214,7 +214,7 @@ static void isc_gpio_set_value(struct gpio_chip *gc, unsigned int off, int val)
 	idx = isc_gpio_get_index(dev, isc_gpio, off);
 	if (idx < 0) {
 		mutex_unlock(&isc_gpio->mutex);
-		return;
+		return idx;
 	}
 	idx = array_index_nospec(idx, isc_gpio->pdata.max_gpio);
 
@@ -224,14 +224,14 @@ static void isc_gpio_set_value(struct gpio_chip *gc, unsigned int off, int val)
 	case 0:
 		if ((atomic_read(ref_cnt) > 0) &&
 			atomic_dec_and_test(ref_cnt)) {
-			tgc->set(tgc, off, val);
+			ret = tgc->set(tgc, off, val);
 		}
 		dev_info(dev, "%s: gpio idx: %d, val to set: %d, refcount: %d\n",
 			__func__, idx, val, atomic_read(ref_cnt));
 		break;
 	case 1:
 		if (!atomic_inc_and_test(ref_cnt))
-			tgc->set(tgc, off, val);
+			ret = tgc->set(tgc, off, val);
 
 		dev_info(dev, "%s: gpio idx: %d, val to set: %d, refcount: %d\n",
 			__func__, idx, val, atomic_read(ref_cnt));
@@ -243,6 +243,8 @@ static void isc_gpio_set_value(struct gpio_chip *gc, unsigned int off, int val)
 	}
 
 	mutex_unlock(&isc_gpio->mutex);
+
+	return ret;
 }
 
 static int isc_gpio_probe(struct platform_device *pdev)
