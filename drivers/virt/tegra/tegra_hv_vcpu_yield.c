@@ -195,10 +195,10 @@ static long tegra_hv_vcpu_yield_ioctl(struct file *filp, unsigned int cmd,
 			if (data->timeout_us > max_timeout_us)
 				data->timeout_us = max_timeout_us;
 
-			ret = work_on_cpu_safe(data->vcpu, vcpu_yield_func,
+			ret = work_on_cpu(data->vcpu, vcpu_yield_func,
 					(void *)data);
 			if (ret)
-				pr_err("work_on_cpu_safe Failed :%d\n", ret);
+				pr_err("work_on_cpu Failed :%d\n", ret);
 		}
 
 		mutex_lock(&data->mutex_lock);
