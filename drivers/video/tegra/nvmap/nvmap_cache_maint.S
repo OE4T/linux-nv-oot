@@ -17,6 +17,9 @@
 #include <asm/alternative.h>
 #include <asm/asm-uaccess.h>
 
+#define DMA_TO_DEVICE	1 /* DMA_TO_DEVICE */
+#define DMA_FROM_DEVICE 2 /* DMA_FROM_DEVICE */
+
 /*
  *	invalidate_icache_range(start,end)
  *
