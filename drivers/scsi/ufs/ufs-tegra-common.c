@@ -1159,7 +1159,7 @@ static void ufs_tegra_scramble_enable(struct ufs_hba *hba)
 
 static int ufs_tegra_pwr_change_notify(struct ufs_hba *hba,
 		enum ufs_notify_change_status status,
-		struct ufs_pa_layer_attr *dev_max_params,
+		const struct ufs_pa_layer_attr *dev_max_params,
 		struct ufs_pa_layer_attr *dev_req_params)
 {
 	struct ufs_tegra_host *ufs_tegra = hba->priv;
