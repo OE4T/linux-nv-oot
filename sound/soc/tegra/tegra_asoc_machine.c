@@ -674,10 +674,10 @@ static int tegra_machine_codec_set_dai_fmt(struct snd_soc_pcm_runtime *rtd,
 		fmt &= ~SND_SOC_DAIFMT_MASTER_MASK;
 		master_mode <<= ffs(SND_SOC_DAIFMT_MASTER_MASK) - 1;
 
-		if (master_mode == SND_SOC_DAIFMT_CBM_CFM)
-			fmt |= SND_SOC_DAIFMT_CBM_CFM;
+		if (master_mode == SND_SOC_DAIFMT_CBP_CFP)
+			fmt |= SND_SOC_DAIFMT_CBP_CFP;
 		else
-			fmt |= SND_SOC_DAIFMT_CBS_CFS;
+			fmt |= SND_SOC_DAIFMT_CBC_CFC;
 	}
 
 	return snd_soc_runtime_set_dai_fmt(rtd, fmt);
