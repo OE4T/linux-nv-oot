@@ -437,7 +437,7 @@ static ARAD_MUX_ENUM_CTRL_DECL(denominator6,
 	.info = tegra186_arad_get_info, \
 	.get = tegra186_arad_get_ratio_int, \
 	.private_value = SOC_SINGLE_VALUE( \
-		TEGRA186_ARAD_LANE##id##_RATIO_INTEGER_PART, 0, \
+		TEGRA186_ARAD_LANE##id##_RATIO_INTEGER_PART, 0, 0, \
 		TEGRA186_ARAD_LANE_RATIO_INTEGER_PART_MASK, 0, 0) }
 
 #define ARAD_LINE_RATIO_FRAC(id) { \
@@ -447,7 +447,7 @@ static ARAD_MUX_ENUM_CTRL_DECL(denominator6,
 	.info = tegra186_arad_get_info, \
 	.get = tegra186_arad_get_ratio_frac,\
 	.private_value = SOC_SINGLE_VALUE(\
-		TEGRA186_ARAD_LANE##id##_RATIO_FRACTIONAL_PART, 0, \
+		TEGRA186_ARAD_LANE##id##_RATIO_FRACTIONAL_PART, 0, 0, \
 		TEGRA186_ARAD_LANE_RATIO_FRAC_PART_MASK, 0, 0) }
 
 static const struct snd_kcontrol_new tegra186_arad_controls[] = {
