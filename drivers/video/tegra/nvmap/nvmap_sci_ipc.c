@@ -349,7 +349,7 @@ unlock:
 		if (!client->ida)
 			trace_refcount_create_handle_from_sci_ipc_id(h, dmabuf,
 				atomic_read(&h->ref),
-				atomic_long_read(&dmabuf->file->f_count),
+				file_ref_read(&dmabuf->file->f_ref),
 				is_ro ? "RO" : "RW");
 		else
 			trace_refcount_get_handle_from_sci_ipc_id(h, dmabuf,
