@@ -52,7 +52,7 @@ struct bluedroid_pm_data {
 	struct regulator *vdd_3v3;
 	struct regulator *vdd_1v8;
 	struct rfkill *rfkill;
-	struct wakeup_source wake_lock;
+	struct wakeup_source *wake_lock;
 	struct pm_qos_request resume_cpu_freq_req;
 	bool resumed;
 	struct work_struct work;
@@ -152,7 +152,7 @@ static void bluedroid_pm_timer_expire(struct timer_list *timer)
 		/* BT can sleep */
 		BDP_DBG("Tx and Rx are idle, BT sleeping");
 		bluedroid_pm_gpio_set_value(bluedroid_pm->ext_wake, 0);
-		__pm_relax(&bluedroid_pm->wake_lock);
+		__pm_relax(bluedroid_pm->wake_lock);
 	} else {
 		/* BT Rx is busy, Reset Timer */
 		BDP_DBG("Rx is busy, restarting the timer");
@@ -179,7 +179,7 @@ static int bluedroid_pm_rfkill_set_power(void *data, bool blocked)
 		if (bluedroid_pm->vdd_1v8)
 			ret |= regulator_disable(bluedroid_pm->vdd_1v8);
 		if (gpio_is_valid(bluedroid_pm->ext_wake))
-			__pm_relax(&bluedroid_pm->wake_lock);
+			__pm_relax(bluedroid_pm->wake_lock);
 		if (bluedroid_pm->resume_min_frequency)
 			cpu_latency_qos_remove_request(&bluedroid_pm->resume_cpu_freq_req);
 	} else {
@@ -254,7 +254,7 @@ static ssize_t lpm_write_proc(struct file *file, const char __user *buffer,
 				BDP_DBG("Tx and Rx are idle, BT sleeping");
 					bluedroid_pm_gpio_set_value(
 						bluedroid_pm->ext_wake, 0);
-					__pm_relax(&bluedroid_pm->wake_lock);
+					__pm_relax(bluedroid_pm->wake_lock);
 				} else {
 					/* Reset Timer */
 					BDP_DBG("Rx is busy, restarting the timer");
@@ -266,7 +266,7 @@ static ssize_t lpm_write_proc(struct file *file, const char __user *buffer,
 			BDP_DBG("Tx is busy, wake_lock taken, delete timer");
 			bluedroid_pm_gpio_set_value(
 				bluedroid_pm->ext_wake, 1);
-			__pm_stay_awake(&bluedroid_pm->wake_lock);
+			__pm_stay_awake(bluedroid_pm->wake_lock);
 			timer_delete(&bluedroid_pm_timer);
 			set_bit(BT_WAKE, &bluedroid_pm->flags);
 		} else {
@@ -478,7 +478,7 @@ static int bluedroid_pm_probe(struct platform_device *pdev)
 			goto free_ext_wake;
 		}
 		/* initialize wake lock */
-		wakeup_source_add(&bluedroid_pm->wake_lock);
+		bluedroid_pm->wake_lock = wakeup_source_register(NULL, "bluedroid_pm");
 		/* Initialize timer */
 		timer_setup(&bluedroid_pm->bluedroid_pm_timer,
 				bluedroid_pm_timer_expire, 0);
@@ -536,7 +536,7 @@ static int bluedroid_pm_remove(struct platform_device *pdev)
 	if (gpio_is_valid(bluedroid_pm->host_wake))
 		gpio_free(bluedroid_pm->host_wake);
 	if (gpio_is_valid(bluedroid_pm->ext_wake)) {
-		wakeup_source_destroy(&bluedroid_pm->wake_lock);
+		wakeup_source_unregister(bluedroid_pm->wake_lock);
 		gpio_free(bluedroid_pm->ext_wake);
 		remove_bt_proc_interface();
 		timer_delete(&bluedroid_pm_timer);
