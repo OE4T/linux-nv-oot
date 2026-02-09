@@ -329,7 +329,7 @@ static int tegra_alt_pcm_ioctl(struct snd_soc_component *component,
 static int tegra_alt_pcm_probe(struct snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
-	dapm->idle_bias_off = 1;
+	dapm->idle_bias = false;
 	return 0;
 }
 
