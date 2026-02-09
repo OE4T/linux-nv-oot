@@ -991,8 +991,6 @@ static void oak_net_rbr_unmap(oak_rx_chan_t *rxp, struct page *page,
 	++rxp->stat.rx_unmap_pages;
 	/* Reset index, mapping and page_phys */
 	rxp->rba[rxp->rbr_ridx].page_phys = 0;
-	page->index = 0;
-	page->mapping = NULL;
 	__free_page(page);
 }
 
@@ -1454,8 +1452,6 @@ static void oak_net_unmap_and_free_page(oak_t *np, oak_rxa_t *rba,
 		       rba->page_virt, rba->page_phys);
 		/* Reset index, mapping and page_phys */
 		rba->page_phys = 0;
-		page->index = 0;
-		page->mapping = NULL;
 		if (good_frame == 0)
 			__free_page(page);
 	} else {
