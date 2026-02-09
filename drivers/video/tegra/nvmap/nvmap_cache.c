@@ -148,7 +148,7 @@ int nvmap_cache_maint_phys_range(unsigned int op, phys_addr_t pstart,
 		void *base;
 		next = min(next, pend);
 #if defined(CONFIG_GENERIC_IOREMAP)
-		io_addr = ioremap_prot(loop, PAGE_SIZE, pgprot_val(PAGE_KERNEL));
+		io_addr = ioremap_prot(loop, PAGE_SIZE, PAGE_KERNEL);
 #else
 		io_addr = __ioremap(loop, PAGE_SIZE, PG_PROT_KERNEL);
 #endif
