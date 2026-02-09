@@ -15,8 +15,12 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,18,0)
+#include <linux/aperture.h>
+#else
 
 #include <drm/drm_aperture.h>
+#endif
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_debugfs.h>
@@ -1312,6 +1316,9 @@ static int host1x_drm_probe(struct host1x_device *dev)
 	drm_mode_config_reset(drm);
 
 	if (drm->mode_config.num_crtc > 0) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,18,0)
+		err = aperture_remove_all_conflicting_devices(tegra_drm_driver.name);
+#else
 #if defined(NV_DRM_APERTURE_REMOVE_FRAMEBUFFERS_HAS_NO_PRIMARY_ARG) /* Linux v6.5 */
 		err = drm_aperture_remove_framebuffers(&tegra_drm_driver);
 #elif defined(NV_DRM_APERTURE_REMOVE_FRAMEBUFFERS_HAS_DRM_DRIVER_ARG) /* Linux v5.15 */
@@ -1319,6 +1326,8 @@ static int host1x_drm_probe(struct host1x_device *dev)
 #else
 		err = drm_aperture_remove_framebuffers(false, "tegradrmfb");
 #endif
+#endif
+
 		if (err < 0)
 			goto hub;
 	}
