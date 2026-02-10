@@ -215,6 +215,16 @@ void tegra_drm_fb_free(struct drm_device *drm);
 int tegra_drm_fb_init(struct drm_device *drm);
 void tegra_drm_fb_exit(struct drm_device *drm);
 
+#ifdef CONFIG_DRM_FBDEV_EMULATION
+int tegra_fbdev_probe(struct drm_fb_helper *helper,
+			     struct drm_fb_helper_surface_size *sizes);
+#define TEGRA_FBDEV_DRIVER_OPS \
+	.fbdev_probe = tegra_fbdev_probe
+#else
+#define TEGRA_FBDEV_DRIVER_OPS \
+	.fbdev_probe = NULL
+#endif
+
 extern struct platform_driver tegra_display_hub_driver;
 extern struct platform_driver tegra_dc_driver;
 extern struct platform_driver tegra_hdmi_driver;

@@ -236,7 +236,10 @@ static const struct fb_ops tegra_fb_ops = {
 	.fb_mmap = tegra_fb_mmap,
 };
 
-static int tegra_fbdev_probe(struct drm_fb_helper *helper,
+static const struct drm_fb_helper_funcs tegra_fb_helper_funcs = {
+};
+
+int tegra_fbdev_probe(struct drm_fb_helper *helper,
 			     struct drm_fb_helper_surface_size *sizes)
 {
 	struct tegra_fbdev *fbdev = to_tegra_fbdev(helper);
@@ -278,7 +281,9 @@ static int tegra_fbdev_probe(struct drm_fb_helper *helper,
 		return PTR_ERR(info);
 	}
 
-	fbdev->fb = tegra_fb_alloc(drm, &cmd, &bo, 1);
+	fbdev->fb = tegra_fb_alloc(drm,
+                                drm_get_format_info(drm, cmd.pixel_format, cmd.modifier[0]),
+                                &cmd, &bo, 1);
 	if (IS_ERR(fbdev->fb)) {
 		err = PTR_ERR(fbdev->fb);
 		dev_err(drm->dev, "failed to allocate DRM framebuffer: %d\n",
@@ -287,6 +292,7 @@ static int tegra_fbdev_probe(struct drm_fb_helper *helper,
 		return PTR_ERR(fbdev->fb);
 	}
 
+	helper->funcs = &tegra_fb_helper_funcs;
 	fb = fbdev->fb;
 	helper->fb = fb;
 #if defined(NV_DRM_FB_HELPER_STRUCT_HAS_INFO_ARG) /* Linux v6.2 */
@@ -326,10 +332,6 @@ destroy:
 	drm_framebuffer_remove(fb);
 	return err;
 }
-
-static const struct drm_fb_helper_funcs tegra_fb_helper_funcs = {
-	.fb_probe = tegra_fbdev_probe,
-};
 
 static struct tegra_fbdev *tegra_fbdev_create(struct drm_device *drm)
 {
