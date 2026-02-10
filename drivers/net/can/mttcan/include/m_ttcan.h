@@ -564,7 +564,7 @@ int add_event_controller_list(struct ttcan_controller *ttcan,
 				struct mttcan_tx_evt_element *txevt,
 				struct list_head *evt_q);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
-u64 ttcan_read_ts_cntr(const struct cyclecounter *ccnt);
+u64 ttcan_read_ts_cntr(struct cyclecounter *ccnt);
 #else
 cycle_t ttcan_read_ts_cntr(const struct cyclecounter *ccnt);
 #endif
