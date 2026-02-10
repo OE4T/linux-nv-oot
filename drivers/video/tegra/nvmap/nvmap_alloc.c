@@ -564,7 +564,7 @@ static int handle_page_alloc(struct nvmap_client *client,
 				int nid = h->numa_id == NUMA_NO_NODE ? numa_mem_id() : h->numa_id;
 
 				allocated = __alloc_pages_bulk(gfp, nid, NULL,
-						nr_page, NULL, pages);
+						nr_page, pages);
 			}
 #endif
 			for (i = allocated; i < nr_page; i++) {
