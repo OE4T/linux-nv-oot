@@ -6695,6 +6695,28 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_BLK_QUEUE_MAX_HW_SECTORS_PRESENT" "" "functions"
         ;;
 
+        block_device_operations_getgeo_has_gendisk_arg)
+            #
+            # Determine if the 'getgeo' function pointer from the
+            # 'block_device_operations' structure has 'gendisk' type argument.
+            #
+            # In Linux v6.18, commit 4fc8728aa ("block: switch ->getgeo() to struct gendisk")
+            # changed the first argument for the getgeo function pointer from
+	    # a block_device pointer to a gendisk pointer.
+            #
+            CODE="
+            #include <linux/blkdev.h>
+            int conftest_block_device_operations_getgeo_has_gendisk_arg(
+                struct block_device_operations *ops,
+                struct gendisk *disk,
+                struct hd_geometry *geo) {
+                    return ops->getgeo(disk, geo);
+            }"
+
+            compile_check_conftest "$CODE" \
+                    "NV_BLOCK_DEVICE_OPERATIONS_GETGEO_HAS_GENDISK_ARG" "" "types"
+        ;;
+
         block_device_operations_open_has_gendisk_arg)
             #
             # Determine if the 'open' function pointer from the
