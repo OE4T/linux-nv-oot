@@ -1670,7 +1670,11 @@ static int tegra210_adsp_compr_copy(struct snd_soc_component *component,
 
 static int tegra210_adsp_compr_pointer(struct snd_soc_component *component,
 				       struct snd_compr_stream *cstream,
+#if defined(NV_SND_SOC_CDAI_OPS_POINTER_HAS_TSTAMP64) /* Linux v6.18 */
+				       struct snd_compr_tstamp64 *tstamp)
+#else
 				       struct snd_compr_tstamp *tstamp)
+#endif
 {
 	struct tegra210_adsp_compr_rtd *prtd = cstream->runtime->private_data;
 	struct tegra210_adsp_app *app = prtd->fe_apm;

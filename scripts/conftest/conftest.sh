@@ -8640,6 +8640,25 @@ compile_test() {
                     "NV_SND_SOC_CARD_JACK_NEW_HAS_NO_SND_SOC_JACK_PINS" "" "types"
         ;;
 
+        snd_soc_cdai_ops_pointer_has_tstamp64)
+            #
+            # Determine if 'struct snd_soc_cdai_ops' uses 64-bit time stamp.
+            #
+            # In Linux v6.18, commit 2c92e2fbe (ALSA: compress_offload:
+            # Add 64-bit safe timestamp infrastructure") switched to a 64-bit
+            # timestamp in the call signature of the 'pointer' function pointer.
+            #
+            CODE="
+            #include <sound/soc.h>
+            int conftest_snd_soc_cdai_ops_pointer_has_tstamp64(struct snd_compr_ops *ops) {
+	        struct snd_compr_stream *stream;
+                struct snd_compr_tstamp64 *tstamp;
+                return ops->pointer(stream, tstamp);
+            }"
+
+            compile_check_conftest "$CODE" "NV_SND_SOC_CDAI_OPS_POINTER_HAS_TSTAMP64" "" "types"
+        ;;
+
         snd_soc_component_driver_struct_has_non_legacy_dai_naming)
             #
             # Determine if 'struct snd_soc_component_driver' has the
