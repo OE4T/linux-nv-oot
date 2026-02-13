@@ -8713,6 +8713,24 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_SND_SOC_DAI_STRUCT_HAS_SYMMETRIC_PREFIX" "" "types"
         ;;
 
+        snd_soc_dapm_context_has_idle_bias)
+            #
+            # Determine whether the snd_soc_dapm_context struct
+            # contains the idle_bias boolean.
+            #
+            # Commit 889dd56f8c ("ASoC: soc-dapm: tidyup idle_bias handling - step1")
+            # in Linux v6.18 switched from using a 1-bit 'idle_bias_off' bitfield
+            # to using an 'idle_bias' boolean.
+            #
+            CODE="
+            #include <sound/soc.h>
+            bool conftest_snd_soc_dapm_context_has_idle_bias(struct snd_soc_dapm_context *dapm) {
+	        return dapm->idle_bias;
+            }"
+
+            compile_check_conftest "$CODE" "NV_SND_SOC_DAPM_CONTEXT_HAS_IDLE_BIAS" "" "types"
+        ;;
+
         snd_soc_of_get_dai_name_has_index_arg)
             #
             # Determine if the function 'snd_soc_of_get_dai_name()' has an index argument.
