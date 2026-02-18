@@ -43,6 +43,10 @@ static DEFINE_SEMAPHORE(switch_sem);
 static bool reset = 0;
 #endif
 
+#if HCI_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
+#define hci_set_quirk(hdev, nr) set_bit((nr), &(hdev)->quirks)
+#endif
+
 static struct usb_driver btusb_driver;
 static struct usb_device_id btusb_table[] = {
 	{
@@ -1652,7 +1656,7 @@ static int btusb_probe(struct usb_interface *intf,
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
 	if (!reset)
-		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
+		hci_set_quirk(hdev, HCI_QUIRK_RESET_ON_CLOSE);
 	RTKBT_DBG("set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);");
 #endif
 
@@ -1670,7 +1674,7 @@ static int btusb_probe(struct usb_interface *intf,
 	}
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
-	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+	hci_set_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 #endif
 
 	err = hci_register_dev(hdev);
