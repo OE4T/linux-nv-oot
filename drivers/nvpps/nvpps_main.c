@@ -360,7 +360,12 @@ static void tsc_timer_callback(unsigned long data)
 #else /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0) */
 static void tsc_timer_callback(struct timer_list *t)
 {
-	struct nvpps_device_data *pdev_data = (struct nvpps_device_data *)from_timer(pdev_data, t, tsc_timer);
+	struct nvpps_device_data *pdev_data =
+#if defined(timer_container_of) /* Linux v6.16 */
+		timer_container_of(pdev_data, t, tsc_timer);
+#else
+		from_timer(pdev_data, t, tsc_timer);
+#endif
 #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0) */
 	uint32_t tsc_lock_status;
 	tsc_lock_status = readl(pdev_data->tsc_reg_map_base + TSC_LOCKING_STATUS_OFFSET);
@@ -394,7 +399,12 @@ static void nvpps_timer_callback(unsigned long data)
 #else /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0) */
 static void nvpps_timer_callback(struct timer_list *t)
 {
-        struct nvpps_device_data        *pdev_data = (struct nvpps_device_data *)from_timer(pdev_data, t, timer);
+	struct nvpps_device_data *pdev_data =
+#if defined(timer_container_of) /* Linux v6.16 */
+		timer_container_of(pdev_data, t, timer);
+#else
+		from_timer(pdev_data, t, timer);
+#endif
 #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0) */
 	/* get timestamps for this event */
 	nvpps_get_ts(pdev_data, 0);
