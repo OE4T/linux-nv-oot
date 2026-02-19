@@ -112,6 +112,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += cyclecounter_struct_read_has_const_cycleco
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += define_semaphore_has_number_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += device_add_disk_has_int_return_type
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += devm_spi_alloc_host
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += devm_pm_domain_attach_list
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += devm_tegra_core_dev_init_opp_table_common
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += devm_thermal_of_zone_register
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += disk_check_media_change
