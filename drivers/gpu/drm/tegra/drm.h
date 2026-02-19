@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012-2013 NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (C) 2012-2025 NVIDIA CORPORATION.  All rights reserved.
  */
 
 #ifndef HOST1X_DRM_H
@@ -12,15 +12,19 @@
 #include <linux/gpio/consumer.h>
 
 #include <drm/drm_atomic.h>
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 #include <drm/drm_bridge.h>
 #include <drm/drm_edid.h>
 #include <drm/drm_encoder.h>
+#endif
 #include <drm/drm_fixed.h>
 #include <drm/drm_probe_helper.h>
 #include <uapi/drm/tegra_drm_next.h>
 
 #include "gem.h"
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 #include "hub.h"
+#endif
 #include <trace/events/trace.h>
 
 /* XXX move to include/uapi/drm/drm_fourcc.h? */
@@ -49,7 +53,9 @@ struct tegra_drm {
 	unsigned int pitch_align;
 	unsigned int num_crtcs;
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 	struct tegra_display_hub *hub;
+#endif
 };
 
 static inline struct host1x *tegra_drm_to_host1x(struct tegra_drm *tegra)
@@ -137,6 +143,7 @@ void *tegra_drm_alloc(struct tegra_drm *tegra, size_t size, dma_addr_t *iova);
 void tegra_drm_free(struct tegra_drm *tegra, size_t size, void *virt,
 		    dma_addr_t iova);
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 struct cec_notifier;
 
 struct tegra_output {
@@ -187,6 +194,7 @@ int drm_dp_aux_attach(struct drm_dp_aux *aux, struct tegra_output *output);
 int drm_dp_aux_detach(struct drm_dp_aux *aux);
 int drm_dp_aux_enable(struct drm_dp_aux *aux);
 int drm_dp_aux_disable(struct drm_dp_aux *aux);
+#endif
 
 /* from fb.c */
 struct tegra_bo *tegra_fb_get_plane(struct drm_framebuffer *framebuffer,
@@ -209,6 +217,7 @@ static inline void tegra_fbdev_setup(struct drm_device *drm)
 { }
 #endif
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 extern struct platform_driver tegra_display_hub_driver;
 extern struct platform_driver tegra_dc_driver;
 extern struct platform_driver tegra_hdmi_driver;
@@ -217,6 +226,7 @@ extern struct platform_driver tegra_dpaux_driver;
 extern struct platform_driver tegra_sor_driver;
 extern struct platform_driver tegra_gr2d_driver;
 extern struct platform_driver tegra_gr3d_driver;
+#endif
 extern struct platform_driver tegra_vic_driver;
 extern struct platform_driver tegra_nvdec_driver;
 extern struct platform_driver tegra_nvenc_driver;
