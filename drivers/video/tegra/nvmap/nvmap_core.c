@@ -208,7 +208,6 @@ void *__nvmap_mmap(struct nvmap_handle *h)
 		vaddr = (__force void *)ioremap_prot(h->carveout->base,
 						adj_size, pgprot_val(prot));
 #endif /* NV_IOREMAP_PROT_HAS_PGPROT_T_ARG */
-		vaddr = ioremap_prot(h->carveout->base, adj_size, pgprot_val(prot));
 #else
 		vaddr = (__force void *)__ioremap(h->carveout->base, adj_size,
 			 prot);
