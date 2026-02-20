@@ -226,10 +226,18 @@ static int tegra210_i2s_set_fmt(struct snd_soc_dai *dai,
 
 	mask = I2S_CTRL_MASTER_EN_MASK;
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+#ifdef SND_SOC_DAIFMT_CBC_CFC
+	case SND_SOC_DAIFMT_CBC_CFC:
+#else
 	case SND_SOC_DAIFMT_CBS_CFS:
+#endif
 		val = 0;
 		break;
+#ifdef SND_SOC_DAIFMT_CBP_CFP
+	case SND_SOC_DAIFMT_CBP_CFP:
+#else
 	case SND_SOC_DAIFMT_CBM_CFM:
+#endif
 		val = I2S_CTRL_MASTER_EN;
 		break;
 	default:
