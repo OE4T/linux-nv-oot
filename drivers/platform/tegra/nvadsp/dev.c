@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2014-2024, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2014-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -24,8 +24,6 @@
 
 #include "dev.h"
 #include "os.h"
-#include "amc.h"
-#include "ape_actmon.h"
 #include "aram_manager.h"
 
 #include "dev-t18x.h"
