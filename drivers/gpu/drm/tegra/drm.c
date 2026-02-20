@@ -60,7 +60,11 @@ static int tegra_atomic_check(struct drm_device *drm,
 	if (err < 0)
 		return err;
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 	return tegra_display_hub_atomic_check(drm, state);
+#else
+	return 0;
+#endif
 }
 
 static const struct drm_mode_config_funcs tegra_drm_mode_config_funcs = {
@@ -69,6 +73,7 @@ static const struct drm_mode_config_funcs tegra_drm_mode_config_funcs = {
 	.atomic_commit = drm_atomic_helper_commit,
 };
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 static void tegra_atomic_post_commit(struct drm_device *drm,
 				     struct drm_atomic_state *old_state)
 {
@@ -107,7 +112,13 @@ static const struct drm_mode_config_helper_funcs
 tegra_drm_mode_config_helpers = {
 	.atomic_commit_tail = tegra_atomic_commit_tail,
 };
-
+#else
+static const struct drm_mode_config_helper_funcs
+tegra_drm_mode_config_helpers = {
+	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
+};
+#endif
+	
 static int tegra_drm_open(struct drm_device *drm, struct drm_file *filp)
 {
 	struct tegra_drm_file *fpriv;
@@ -1291,11 +1302,13 @@ static int host1x_drm_probe(struct host1x_device *dev)
 		iova_cache_put();
 	}
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 	if (tegra->hub) {
 		err = tegra_display_hub_prepare(tegra->hub);
 		if (err < 0)
 			goto device;
 	}
+#endif
 
 #if defined(NV_DRM_DRIVER_STRUCT_HAS_IRQ_ENABLED_ARG) /* Linux v5.15 */
 	/*
@@ -1338,9 +1351,11 @@ static int host1x_drm_probe(struct host1x_device *dev)
 	return 0;
 
 hub:
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 	if (tegra->hub)
 		tegra_display_hub_cleanup(tegra->hub);
 device:
+#endif
 	if (tegra->domain) {
 		mutex_destroy(&tegra->mm_lock);
 		drm_mm_takedown(&tegra->mm);
@@ -1374,8 +1389,10 @@ static int host1x_drm_remove(struct host1x_device *dev)
 	drm_atomic_helper_shutdown(drm);
 	drm_mode_config_cleanup(drm);
 
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 	if (tegra->hub)
 		tegra_display_hub_cleanup(tegra->hub);
+#endif
 
 	err = host1x_device_exit(dev);
 	if (err < 0)
@@ -1477,6 +1494,7 @@ static struct host1x_driver host1x_drm_driver = {
 };
 
 static struct platform_driver * const drivers[] = {
+#ifdef CONFIG_DRM_TEGRA_HAVE_DISPLAY
 	&tegra_display_hub_driver,
 	&tegra_dc_driver,
 	&tegra_hdmi_driver,
@@ -1485,6 +1503,7 @@ static struct platform_driver * const drivers[] = {
 	&tegra_sor_driver,
 	&tegra_gr2d_driver,
 	&tegra_gr3d_driver,
+#endif
 	&tegra_vic_driver,
 	&tegra_nvdec_driver,
 	&tegra_nvenc_driver,
