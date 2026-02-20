@@ -197,6 +197,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += __v4l2_async_nf_add_subdev
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += v4l2_subdev_pad_ops_struct_has_get_set_frame_interval
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += v4l2_subdev_pad_ops_struct_has_dv_timings
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += vm_area_struct_has_const_vm_flags
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += work_on_cpu_key
 NV_CONFTEST_GENERIC_COMPILE_TESTS += is_export_symbol_present_drm_gem_prime_fd_to_handle
 NV_CONFTEST_GENERIC_COMPILE_TESTS += is_export_symbol_present_drm_gem_prime_handle_to_fd
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += crypto_engine_ctx_struct_removed_test
@@ -226,6 +227,7 @@ NV_HEADER_PRESENCE_TESTS = \
   drm/drm_dp_aux_bus.h \
   drm/drm_eld.h \
   generated/autoconf.h \
+  linux/cpuhplock.h \
   linux/kconfig.h \
   linux/iosys-map.h \
   net/gso.h \
