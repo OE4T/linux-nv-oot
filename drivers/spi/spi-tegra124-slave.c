@@ -2273,6 +2273,18 @@ static const struct dev_pm_ops tegra_spi_pm_ops = {
 		tegra_spi_runtime_resume, NULL)
 	SET_SYSTEM_SLEEP_PM_OPS(tegra_spi_suspend, tegra_spi_resume)
 };
+#if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
+static inline void tegra_spi_remove_wrapper(struct platform_device *pdev)
+{
+	tegra_spi_remove(pdev);
+}
+#else
+static inline int tegra_spi_remove_wrapper(struct platform_device *pdev)
+{
+	return tegra_spi_remove(pdev);
+}
+#endif
+
 static struct platform_driver tegra_spi_driver = {
 	.driver = {
 		.name		= "spi-tegra124-slave",
@@ -2281,7 +2293,7 @@ static struct platform_driver tegra_spi_driver = {
 		.of_match_table	= of_match_ptr(tegra_spi_of_match),
 	},
 	.probe =	tegra_spi_probe,
-	.remove =	tegra_spi_remove,
+	.remove	=	tegra_spi_remove_wrapper,
 };
 module_platform_driver(tegra_spi_driver);
 
