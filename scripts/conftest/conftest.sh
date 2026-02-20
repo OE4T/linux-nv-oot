@@ -8309,6 +8309,25 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_ASOC_SIMPLE_RENAMED_SIMPLE" "" "functions"
         ;;
 
+        soc_single_value_has_xmin_arg)
+            #
+            # Determine if SOC_SINGLE_VALUE macro has xmin arg
+            #
+            # Commit 6db630902727 ("ASoC: Tidy up SOC_DOUBLE_* and SOC_SINGLE_*
+            # helpers") added an 'xmin' argument to the SOC_SINGLE_VALUE macro
+            # in Linux v6.15.
+            #
+            CODE="
+            #include <sound/soc.h>
+            void conftest_soc_single_value_has_xmin_arg(void)
+            {
+                int value = SOC_SINGLE_VALUE(0, 0, 0, 0, 0, 0);
+            }
+            "
+
+            compile_check_conftest "$CODE" "NV_SOC_SINGLE_VALUE_HAS_XMIN_ARG" "" "types"
+        ;;
+
         spi_get_chipselect)
             #
             # Determine if the function 'spi_get_chip_select()' is present.

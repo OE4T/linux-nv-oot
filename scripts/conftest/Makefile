@@ -193,6 +193,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_dai_ops_struct_set_channel_map_has
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_of_get_dai_name_has_index_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_rtd_to_codec
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += simple_util_dai_init
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += soc_single_value_has_xmin_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += spi_get_chipselect
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += tc_taprio_qopt_offload_struct_has_cmd
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += tegra264_chip_id
