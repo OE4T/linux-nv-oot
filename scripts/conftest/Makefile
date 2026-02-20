@@ -192,6 +192,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_dai_ops_struct_has_probe
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_dai_ops_struct_set_channel_map_has_const_slot_args
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_of_get_dai_name_has_index_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_rtd_to_codec
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += snd_soc_dapm_context_has_idle_bias
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += simple_util_dai_init
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += soc_single_value_has_xmin_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += spi_get_chipselect

@@ -8290,6 +8290,24 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_SND_SOC_RTD_TO_CODEC_PRESENT" "" "functions"
         ;;
 
+        snd_soc_dapm_context_has_idle_bias)
+            #
+            # Determine if the snd_soc_dapm_context struct changed from having
+	    # the idle_bias_off bitfield to the idle_bias boolean.
+            #
+            # In Linux v6.18, commit 889dd56f8c ("ASoC: soc-dapm: tidyup
+            # idle_bias handling - step1") changed the idle_bias_off
+	    # member to idle_bias, and switch to boolean type.f
+            #
+            CODE="
+            #include <sound/soc.h>
+            bool snd_soc_dapm_context_has_idle_bias(struct snd_soc_dapm_context *dapm) {
+	        return dapm->idle_bias;
+            }"
+
+            compile_check_conftest "$CODE" "NV_SND_SOC_DAPM_CONTEXT_HAS_IDLE_BIAS" "" "types"
+        ;;
+
         simple_util_dai_init)
             #
             # Determine if the simple_util_dai_init() is present. This will help on finding
