@@ -353,7 +353,11 @@ static int tegra_machine_driver_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, card);
 	snd_soc_card_set_drvdata(card, machine);
 
-	card->dapm.idle_bias_off = true;
+#if defined(NV_SND_SOC_DAPM_CONTEXT_HAS_IDLE_BIAS)
+	card->dapm.idle_bias = false;
+#else
+	card->dapm.idle_bias_off = 1;
+#endif
 
 	memset(&machine->audio_clock, 0, sizeof(machine->audio_clock));
 	ret = tegra_asoc_utils_init(&machine->audio_clock, &pdev->dev);
