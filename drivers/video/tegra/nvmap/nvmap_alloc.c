@@ -1280,7 +1280,7 @@ void nvmap_free_handle_from_fd(struct nvmap_client *client,
 	if (handle) {
 		dmabuf = is_ro ? handle->dmabuf_ro : handle->dmabuf;
 		handle_ref = atomic_read(&handle->ref);
-		dmabuf_ref = dmabuf ? atomic_long_read(&dmabuf->file->f_count) : 0;
+		dmabuf_ref = dmabuf ? file_count(dmabuf->file) : 0;
 	}
 
 	trace_refcount_free_handle(handle, dmabuf, handle_ref, dmabuf_ref,

@@ -346,7 +346,11 @@ found:
 		goto fail;
 	BUG_ON(!h->dmabuf->file);
 	/* This is same as get_dma_buf() if file->f_count was non-zero */
+#if defined(NV_FILE_STRUCT_HAS_F_REF) /* Linux v6.13 */
+	if (file_ref_get(&h->dmabuf->file->f_ref) == 0)
+#else
 	if (atomic_long_inc_not_zero(&h->dmabuf->file->f_count) == 0)
+#endif
 		goto fail;
 	mutex_unlock(&h->lock);
 
