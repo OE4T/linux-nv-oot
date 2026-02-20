@@ -163,6 +163,19 @@ static void add_handle_ref(struct nvmap_client *client,
 	nvmap_ref_unlock(client);
 }
 
+/*
+ * Remove handle ref from client's handle_ref rb tree.
+ */
+static void remove_handle_ref(struct nvmap_client *client,
+			   struct nvmap_handle_ref *ref)
+{
+	nvmap_ref_lock(client);
+	atomic_dec(&ref->handle->share_count);
+	client->handle_count--;
+	rb_erase(&ref->node, &client->handle_refs);
+	nvmap_ref_unlock(client);
+}
+
 struct nvmap_handle_ref *nvmap_create_handle_from_va(struct nvmap_client *client,
 						     ulong vaddr, size_t size,
 						     u32 flags)
@@ -443,6 +456,7 @@ exit_mm:
 	}
 
 exit:
+	remove_handle_ref(client, ref);
 	pr_err("dmabuf is NULL\n");
 	kfree(ref);
 	return ERR_PTR(-EINVAL);
