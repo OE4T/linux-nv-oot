@@ -61,8 +61,10 @@ static int tegra_atomic_check(struct drm_device *drm,
 
 static const struct drm_mode_config_funcs tegra_drm_mode_config_funcs = {
 	.fb_create = tegra_fb_create,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 #ifdef CONFIG_DRM_FBDEV_EMULATION
 	.output_poll_changed = drm_fb_helper_output_poll_changed,
+#endif
 #endif
 	.atomic_check = tegra_atomic_check,
 	.atomic_commit = drm_atomic_helper_commit,
@@ -886,7 +888,9 @@ static const struct drm_driver tegra_drm_driver = {
 			   DRIVER_ATOMIC | DRIVER_RENDER | DRIVER_SYNCOBJ,
 	.open = tegra_drm_open,
 	.postclose = tegra_drm_postclose,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 	.lastclose = drm_fb_helper_lastclose,
+#endif
 
 #if defined(CONFIG_DEBUG_FS)
 	.debugfs_init = tegra_debugfs_init,
