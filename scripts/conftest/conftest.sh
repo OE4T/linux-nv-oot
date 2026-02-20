@@ -7673,6 +7673,22 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_OF_PROPERTY_FOR_EACH_REMOVED_INTERNAL_ARGS" "" "types"
         ;;
 
+        page_struct_has___folio_index)
+            #
+            # Determine if the 'page' structure has '__folio_index' member.
+            #
+            # This change was made in Linux v6.16 by commit ("acc53a0b4c15 mm:
+            # rename page->index to page->__folio_index").
+            #
+            CODE="
+            #include <linux/mm_types.h>
+            int conftest_page_struct_has___folio_index(void) {
+                return offsetof(struct page, __folio_index);
+            }"
+
+            compile_check_conftest "$CODE" "NV_PAGE_STRUCT_HAS___FOLIO_INDEX" "" "types"
+        ;;
+
         pwm_chip_struct_has_base_arg)
             #
             # Determine if 'struct pwm_chip' has the 'base' field.
