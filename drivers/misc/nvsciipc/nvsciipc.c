@@ -22,6 +22,7 @@
 #include <linux/cred.h>
 #include <linux/of.h>
 #include <linux/fs.h>
+#include <linux/version.h>
 
 #ifdef CONFIG_TEGRA_VIRTUALIZATION
 #include <soc/tegra/virt/syscalls.h>
@@ -685,7 +686,9 @@ static const struct file_operations nvsciipc_fops = {
 	.open		= nvsciipc_dev_open,
 	.release		= nvsciipc_dev_release,
 	.unlocked_ioctl	= nvsciipc_dev_ioctl,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek		= no_llseek,
+#endif
 	.read		= nvsciipc_dbg_read,
 };
 

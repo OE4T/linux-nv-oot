@@ -18,6 +18,7 @@
 #include <linux/sched/signal.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+#include <linux/version.h>
 #include <soc/tegra/ivc_ext.h>
 #include <linux/tegra-ivc-bus.h>
 #include <soc/tegra/ivc-priv.h>
@@ -226,7 +227,9 @@ static const struct file_operations tegra_camchar_fops = {
 	.release = tegra_camchar_release,
 	.unlocked_ioctl = tegra_camchar_ioctl,
 	.compat_ioctl = tegra_camchar_ioctl,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
 	.llseek = no_llseek,
+#endif
 };
 
 static int __init tegra_camchar_init(struct tegra_ivc_driver *drv)
