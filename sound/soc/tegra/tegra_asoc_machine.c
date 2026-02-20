@@ -499,9 +499,14 @@ static int parse_dt_dai_links(struct snd_soc_card *card,
 					    "link-name",
 					    &dai_link->name)) {
 #if defined(NV_ASOC_SIMPLE_RENAMED_SIMPLE) /* Linux 6.7 */
-			ret = simple_util_set_dailink_name(
-				&pdev->dev, dai_link, "%s-%d",
-				"tegra-dlink", link_count);
+			dai_link->name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "%s-%d",
+			                                "tegra-dlink", link_count);
+			if (!dai_link->name) {
+			    ret = -ENOMEM;
+			} else {
+				dai_link->stream_name = dai_link->name;
+				ret = 0;
+			}
 #else
 			ret = asoc_simple_set_dailink_name(
 				&pdev->dev, dai_link, "%s-%d",
@@ -597,7 +602,12 @@ int parse_card_info(struct snd_soc_card *card, struct snd_soc_ops *pcm_ops,
 	int ret;
 
 #if defined(NV_ASOC_SIMPLE_RENAMED_SIMPLE) /* Linux 6.7 */
-	ret = simple_util_parse_card_name(card, PREFIX);
+	ret = snd_soc_of_parse_card_name(card, "label");
+	if (ret < 0) {
+	    char prop[128];
+	    snprintf(prop, sizeof(prop), "%sname", PREFIX);
+	    ret = snd_soc_of_parse_card_name(card, prop);
+	}
 #else
 	ret = asoc_simple_parse_card_name(card, PREFIX);
 #endif
