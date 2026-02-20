@@ -124,6 +124,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_debugfs_remove_files_has_root_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_display_info_struct_has_source_physical_address
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_dp_link_power_up
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_driver_has_fbdev_probe
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_driver_struct_has_date
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_driver_struct_has_irq_enabled_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_edid_connector_add_modes
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_fb_helper_alloc_info

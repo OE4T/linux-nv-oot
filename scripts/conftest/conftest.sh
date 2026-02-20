@@ -7162,6 +7162,23 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_DRM_CONNECTOR_HELPER_FUNCS_STRUCT_MODE_VALID_HAS_CONST_ARG" "" "types"
         ;;
 
+        drm_driver_struct_has_date)
+            #
+            # Determine if the 'drm_driver' structure has a 'date' field.
+            #
+            # Commit cb2e1c2136f7 ("drm: remove driver date from struct drm_driver and all
+            # drivers") removed the 'date' field from the 'drm_driver' structure in Linux
+            # v6.14.
+            #
+            CODE="
+            #include <drm/drm_drv.h>
+            int conftest_drm_driver_struct_has_date(void) {
+                return offsetof(struct drm_driver, date);
+            }"
+
+            compile_check_conftest "$CODE" "NV_DRM_DRIVER_STRUCT_HAS_DATE" "" "types"
+        ;;
+
         drm_driver_struct_has_irq_enabled_arg)
             #
             # Determine if the 'drm_driver' structure
