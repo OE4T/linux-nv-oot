@@ -2452,7 +2452,7 @@ static int tegra_hv_vse_safety_tsec_sv_op(struct ahash_request *req)
 		return -ENOMEM;
 	}
 
-	cmac_req_data = (struct tegra_vse_cmac_req_data *) req->priv;
+	cmac_req_data = (struct tegra_vse_cmac_req_data *) cmac_ctx->priv;
 
 	ivc_tx = &ivc_req_msg->tx[0];
 	ivc_hdr = &ivc_req_msg->ivc_hdr;
@@ -2608,7 +2608,7 @@ static int tegra_hv_vse_safety_cmac_sv_op(struct ahash_request *req, bool is_las
 		return -ENOMEM;
 	}
 
-	cmac_req_data = (struct tegra_vse_cmac_req_data *) req->priv;
+	cmac_req_data = (struct tegra_vse_cmac_req_data *) cmac_ctx->priv;
 
 	ivc_tx = &ivc_req_msg->tx[0];
 	ivc_hdr = &ivc_req_msg->ivc_hdr;
@@ -3840,7 +3840,7 @@ static int tegra_hv_vse_aes_gmac_sv_init(struct ahash_request *req)
 		goto exit;
 	}
 
-	gmac_req_data = (struct tegra_vse_gmac_req_data *) req->priv;
+	gmac_req_data = (struct tegra_vse_gmac_req_data *) gmac_ctx->priv;
 
 	if ((gmac_req_data->request_type == GMAC_VERIFY)
 			|| (gmac_req_data->request_type == GMAC_SIGN)) {
@@ -3982,7 +3982,7 @@ static int tegra_hv_vse_aes_gmac_sv_op(struct ahash_request *req, bool is_last)
 
 	se_dev = g_virtual_se_dev[g_crypto_to_ivc_map[gmac_ctx->node_id].se_engine];
 	pivck = g_crypto_to_ivc_map[gmac_ctx->node_id].ivck;
-	gmac_req_data = (struct tegra_vse_gmac_req_data *) req->priv;
+	gmac_req_data = (struct tegra_vse_gmac_req_data *) gmac_ctx->priv;
 
 	err = tegra_vse_aes_gmac_sv_check_params(req);
 	if (err != 0)

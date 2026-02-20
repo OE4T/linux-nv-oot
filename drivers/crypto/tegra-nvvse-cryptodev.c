@@ -661,7 +661,7 @@ static int tnvvtsec_crypto_aes_cmac_sign_verify(struct tnvvse_crypto_ctx *ctx,
 	ret = snprintf(key_as_keyslot, AES_KEYSLOT_NAME_SIZE, "NVSEAES ");
 	memcpy(key_as_keyslot + KEYSLOT_OFFSET_BYTES, aes_cmac_ctl->key_slot, KEYSLOT_SIZE_BYTES);
 
-	req->priv = &priv_data;
+	cmac_ctx->priv = &priv_data;
 	priv_data.result = 0;
 	ret = crypto_ahash_setkey(tfm, key_as_keyslot, aes_cmac_ctl->key_length);
 	if (ret) {
@@ -811,7 +811,7 @@ static int tnvvse_crypto_aes_cmac_sign_verify(struct tnvvse_crypto_ctx *ctx,
 	ret = snprintf(key_as_keyslot, AES_KEYSLOT_NAME_SIZE, "NVSEAES ");
 	memcpy(key_as_keyslot + KEYSLOT_OFFSET_BYTES, aes_cmac_ctl->key_slot, KEYSLOT_SIZE_BYTES);
 
-	req->priv = &priv_data;
+	cmac_ctx->priv = &priv_data;
 	priv_data.result = 0;
 	ret = crypto_ahash_setkey(tfm, key_as_keyslot, aes_cmac_ctl->key_length);
 	if (ret) {
@@ -931,7 +931,7 @@ static int tnvvse_crypto_aes_gmac_init(struct tnvvse_crypto_ctx *ctx,
 	memset(iv, 0, TEGRA_NVVSE_AES_GCM_IV_LEN);
 	priv_data.request_type = GMAC_INIT;
 	priv_data.iv = iv;
-	req->priv = &priv_data;
+	gmac_ctx->priv = &priv_data;
 
 	ret = wait_async_op(&sha_state->sha_complete, crypto_ahash_init(req));
 	if (ret) {
@@ -1013,7 +1013,7 @@ static int tnvvse_crypto_aes_gmac_sign_verify_init(struct tnvvse_crypto_ctx *ctx
 		priv_data.request_type = GMAC_SIGN;
 	else
 		priv_data.request_type = GMAC_VERIFY;
-	req->priv = &priv_data;
+	gmac_ctx->priv = &priv_data;
 
 	ret = wait_async_op(&sha_state->sha_complete, crypto_ahash_init(req));
 	if (ret) {
@@ -1048,6 +1048,8 @@ static int tnvvse_crypto_aes_gmac_sign_verify(struct tnvvse_crypto_ctx *ctx,
 	char *result_buff;
 	uint8_t iv[TEGRA_NVVSE_AES_GCM_IV_LEN];
 	struct ahash_request *req;
+	struct tegra_virtual_se_aes_gmac_context *gmac_ctx;
+	struct crypto_ahash *tfm;
 	char *src_buffer = gmac_sign_verify_ctl->src_buffer;
 	struct tnvvse_gmac_req_data priv_data;
 	int ret = -EINVAL;
@@ -1073,6 +1075,8 @@ static int tnvvse_crypto_aes_gmac_sign_verify(struct tnvvse_crypto_ctx *ctx,
 
 	result_buff = sha_state->result_buff;
 	req = sha_state->req;
+	tfm = sha_state->tfm;
+	gmac_ctx = crypto_ahash_ctx(tfm);
 
 	if (gmac_sign_verify_ctl->gmac_type == TEGRA_NVVSE_AES_GMAC_SIGN)
 		priv_data.request_type = GMAC_SIGN;
@@ -1080,7 +1084,7 @@ static int tnvvse_crypto_aes_gmac_sign_verify(struct tnvvse_crypto_ctx *ctx,
 		priv_data.request_type = GMAC_VERIFY;
 	priv_data.iv = NULL;
 	priv_data.is_first = gmac_sign_verify_ctl->is_first;
-	req->priv = &priv_data;
+	gmac_ctx->priv = &priv_data;
 
 	/* copy input buffer */
 	ret = tnvvse_crypt_copy_user_buf(gmac_sign_verify_ctl->data_length, sha_state->in_buf,
