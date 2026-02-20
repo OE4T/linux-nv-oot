@@ -17,7 +17,6 @@
 #include <linux/dcache.h>
 #include <linux/in.h>
 #include <net/sock.h>
-#include <asm/unaligned.h>
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -35,6 +34,11 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32)
 #include <linux/pm_runtime.h>
+#endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
+#include <asm/unaligned.h>
+#else
+#include <linux/unaligned.h>
 #endif
 
 #include <linux/firmware.h>
