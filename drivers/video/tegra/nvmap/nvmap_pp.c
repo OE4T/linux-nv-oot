@@ -282,7 +282,7 @@ static ulong nvmap_page_pool_free_pages_locked(struct nvmap_page_pool *pool,
 #ifdef CONFIG_ARM64_4K_PAGES
 		if (use_page_list_bp) {
 			for (i = 0; i < pool->pages_per_big_pg; i++)
-				__free_page(nth_page(page, i));
+				__free_page(page + i);
 			pr_debug("released %d pages\n", pool->pages_per_big_pg);
 			if (nr_pages > pool->pages_per_big_pg)
 				nr_pages -= pool->pages_per_big_pg;
@@ -379,7 +379,7 @@ int nvmap_page_pool_alloc_lots_bp(struct nvmap_page_pool *pool,
 			break;
 
 		for (i = 0; i < pool->pages_per_big_pg; i++)
-			pages[ind + i] = nth_page(page, i);
+			pages[ind + i] = page + i;
 
 		ind += pool->pages_per_big_pg;
 	}
@@ -406,7 +406,7 @@ static bool nvmap_is_big_page(struct nvmap_page_pool *pool,
 		return false;
 
 	for (i = 1; i < pool->pages_per_big_pg; i++)
-		if (pages[idx + i] != nth_page(page, i))
+		if (pages[idx + i] != (page + i))
 			break;
 
 	return i == pool->pages_per_big_pg ? true: false;

@@ -196,7 +196,7 @@ void *__nvmap_mmap(struct nvmap_handle *h)
 			goto out;
 
 		for (i = 0; i < nr_pages; i++)
-			pages[i] = nth_page(page, i);
+			pages[i] = page + i;
 
 		vaddr = vmap(pages, nr_pages, VM_MAP, prot);
 	} else {
