@@ -51,6 +51,10 @@ static DEFINE_SEMAPHORE(switch_sem);
 static bool reset = true;
 #endif
 
+#if HCI_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
+#define hci_set_quirk(hdev, nr) set_bit((nr), &(hdev)->quirks)
+#endif
+
 static struct usb_driver btusb_driver;
 #if HCI_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
 static u16 iso_min_conn_handle = 0x1b;
@@ -2037,12 +2041,12 @@ static int btusb_probe(struct usb_interface *intf,
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 	set_bit(BTUSB_USE_ALT3_FOR_WBS, &data->flags);
-	set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
+	hci_set_quirk(hdev, HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED);
 #endif
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
 	if (!reset)
-		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
+		hci_set_quirk(hdev, HCI_QUIRK_RESET_ON_CLOSE);
 #endif
 
 	/* Interface numbers are hardcoded in the specification */
@@ -2059,7 +2063,7 @@ static int btusb_probe(struct usb_interface *intf,
 	}
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
-	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+	hci_set_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY);
 #endif
 
 	err = hci_register_dev(hdev);
