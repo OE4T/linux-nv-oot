@@ -28,6 +28,9 @@
 #endif
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
+#if defined(NV_DRM_DRM_CLIENT_SETUP_H_PRESENT) /* Linux v6.13 */
+#include <drm/drm_client_setup.h>
+#endif
 #include <drm/drm_debugfs.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_fourcc.h>
