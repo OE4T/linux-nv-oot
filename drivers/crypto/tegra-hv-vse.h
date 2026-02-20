@@ -112,6 +112,8 @@ struct tegra_virtual_se_aes_cmac_context {
 	bool is_key_slot_allocated;
 	/*Crypto dev instance*/
 	uint32_t node_id;
+	/* Used to CMAC request data */
+	void *priv;
 };
 
 /* Security Engine AES GMAC context */
@@ -126,6 +128,8 @@ struct tegra_virtual_se_aes_gmac_context {
 	bool is_key_slot_allocated;
 	/*Crypto dev instance*/
 	uint32_t node_id;
+	/* Used to GMAC request data */
+	void *priv;
 };
 
 /* Security Engine SHA context */
