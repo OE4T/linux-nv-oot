@@ -58,7 +58,7 @@ static bool of_dai_link_is_available(struct device_node *link_node)
 		 * number of links that DT exposes). Other codec subnodes
 		 * can be empty and populated in override file.
 		 */
-		if (!of_property_read_bool(child, DAI) &&
+		if (!of_property_present(child, DAI) &&
 		    !of_node_cmp(child->name, "codec"))
 			continue;
 
@@ -89,7 +89,7 @@ static int of_get_child_count_with_name(struct device_node *node,
 
 	for_each_child_of_node(node, child)
 		if (!of_node_cmp(child->name, name) &&
-		    of_property_read_bool(child, DAI))
+		    of_property_present(child, DAI))
 			num++;
 
 	return num;
@@ -212,7 +212,7 @@ static int get_num_codec_confs(struct platform_device *pdev, int *num_confs)
 			if (of_node_cmp(codec->name, "codec"))
 				continue;
 
-			if (of_property_read_bool(codec, "prefix"))
+			if (of_property_present(codec, "prefix"))
 				conf_count++;
 		}
 
@@ -303,7 +303,7 @@ static int parse_dt_codec_confs(struct snd_soc_card *card)
 			if (of_node_cmp(codec->name, "codec"))
 				continue;
 
-			if (!of_property_read_bool(codec, "prefix"))
+			if (!of_property_present(codec, "prefix"))
 				continue;
 
 			err = of_parse_phandle_with_args(codec, DAI, CELL, 0,
@@ -478,7 +478,7 @@ static int parse_dt_dai_links(struct snd_soc_card *card,
 			if (of_node_cmp(codec->name, "codec"))
 				continue;
 
-			if (!of_property_read_bool(codec, DAI)) {
+			if (!of_property_present(codec, DAI)) {
 				dev_dbg(&pdev->dev,
 					"sound-dai prop missing for (%pOF)\n",
 					codec);
@@ -615,7 +615,7 @@ int parse_card_info(struct snd_soc_card *card, struct snd_soc_ops *pcm_ops,
 		return ret;
 
 	/* parse machine DAPM widgets */
-	if (of_property_read_bool(node, PREFIX "widgets")) {
+	if (of_property_present(node, PREFIX "widgets")) {
 		ret = snd_soc_of_parse_audio_simple_widgets(card,
 			PREFIX "widgets");
 		if (ret < 0)
@@ -628,7 +628,7 @@ int parse_card_info(struct snd_soc_card *card, struct snd_soc_ops *pcm_ops,
 	 * which require them to be connected to machine source/sink
 	 * DAPM widgets.
 	 */
-	if (of_property_read_bool(node, PREFIX "routing")) {
+	if (of_property_present(node, PREFIX "routing")) {
 		ret = snd_soc_of_parse_audio_routing(card, PREFIX "routing");
 		if (ret < 0)
 			return ret;
