@@ -212,7 +212,7 @@ static int get_num_codec_confs(struct platform_device *pdev, int *num_confs)
 			if (of_node_cmp(codec->name, "codec"))
 				continue;
 
-			if (of_property_read_bool(codec, "prefix"))
+			if (of_property_present(codec, "prefix"))
 				conf_count++;
 		}
 
@@ -303,7 +303,7 @@ static int parse_dt_codec_confs(struct snd_soc_card *card)
 			if (of_node_cmp(codec->name, "codec"))
 				continue;
 
-			if (!of_property_read_bool(codec, "prefix"))
+			if (!of_property_present(codec, "prefix"))
 				continue;
 
 			err = of_parse_phandle_with_args(codec, DAI, CELL, 0,
